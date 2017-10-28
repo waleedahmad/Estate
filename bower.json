@@ -1,0 +1,28 @@
+{
+  "name": "estate",
+  "description": "",
+  "main": "",
+  "authors": [
+    "Waleed Ahmad <waleedgplus@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.2.1",
+    "isotope": "isotope-layout#^3.0.4",
+    "bootstrap": "^3.3.7",
+    "respond": "^1.4.2",
+    "bxslider-4": "^4.2.12",
+    "nouislider": "noUiSlider#^10.1.0",
+    "bootstrap-select": "^1.12.4",
+    "bootbox.js": "bootbox#^4.4.0",
+    "toastr": "^2.1.3"
+  }
+}
