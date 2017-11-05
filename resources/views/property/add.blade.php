@@ -16,7 +16,7 @@
     </section><!-- end subheader section -->
 
     <!-- start my properties list -->
-    <section class="properties submit-property" data-action="add">
+    <section class="properties">
         <div class="container">
             <form method="post" action="/user/submit_property">
                 <div class="row">
@@ -151,7 +151,7 @@
                                 <div class="col-lg-12 col-md-12 col-sm-6 available-towns">
                                     <div class="formBlock">
                                         <label for="location">Location</label><br/>
-                                        <select name="location" id="location" class="formDropdown selectpicker " data-live-search="true">
+                                        <select name="location" id="location" class="formDropdown selectpicker" data-live-search="true" data-width="100%">
                                             <option value="">Select from list</option>
                                         </select>
                                     </div>
@@ -191,7 +191,7 @@
 
                     <div class="col-lg-4 col-lg-offset-4 col-md-4">
                         <div class="formBlock">
-                            <input class="buttonColor" id="submit-listing" type="submit" value="SUBMIT PROPERTY">
+                            <input class="buttonColor" id="submit-listing" type="submit" data-action="add" value="SUBMIT PROPERTY">
                         </div>
                     </div>
                 </div><!-- end row -->

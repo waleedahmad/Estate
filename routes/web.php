@@ -20,6 +20,7 @@ Route::get('/property/images', 'PropertyController@getPropertyImages');
 Route::get('/property/{id}', 'PropertyController@getProperty');
 
 Route::group(['middleware'  =>  ['auth']], function(){
+
     Route::get('/property/{id}/edit', 'PropertyController@getEditProperty');
 
     Route::delete('/user/listing', 'PropertyController@removeListing');

@@ -14,5 +14,6 @@ class DatabaseSeeder extends Seeder
          $this->call(AdminSeeder::class);
          $this->call(DefaultLayouts::class);
          $this->call(ConfigSeeder::class);
+         $this->call(TierSeeder::class);
     }
 }

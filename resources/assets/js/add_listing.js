@@ -1,27 +1,175 @@
 APP.SUBMIT_LISTING = () => {
+
     let geocoder,
         map,
         marker,
         myDropzone,
-        action = $('.submit-property').attr('data-action'),
-        coords = (action === 'edit') ? {lat : parseFloat($('.submit-property').attr('data-lat')), lng : parseFloat($('.submit-property').attr('data-lng'))} : null,
-        listing_id = (action === 'edit') ? $('.submit-property').attr('data-listing-id') : null,
+        action = getSubmitAction(),
+        coords = getListingCoordinates(),
+        listing_id = getListingID(),
         remove_queue = [];
 
-    if(action === 'edit'){
-        if(!map){
-            initListingsMap(coords.lat, coords.lng);
-            placeMarker({
-                lat : coords.lat,
-                lng : coords.lng
-            });
-        }else{
-            placeMarker({
-                lat : coords.lat,
-                lng : coords.lng
+    let $submit_listing = $('#submit-listing'),
+        $dropzone = $('#dropzone'),
+        $name = $("#property_title"),
+        $description = $("#description"),
+        $price = $("#price"),
+        $land_area = $("#land_area"),
+        $area_units = $("#area_units"),
+        $expire_after = $("#expire_after"),
+        $purpose = $("#purpose"),
+        $propertyType = $("#propertyType"),
+        $subType = $('#subType'),
+        $city = $("#city"),
+        $location = $("#location"),
+        $lat = $("#lat"),
+        $lng = $("#lng");
+
+    function getName(){
+        return $($name).val();
+    }
+
+    function getDescription(){
+        return $($description).val();
+    }
+
+    function getPrice(){
+        return $($price).val();
+    }
+
+    function getLandArea(){
+        return $($land_area).val();
+    }
+
+    function getAreaUnits(){
+        return $($area_units).val();
+    }
+
+    function getExpireDate(){
+        return $($expire_after).val();
+    }
+
+    function getPurpose(){
+        return $($purpose).val();
+    }
+
+    function getPropertyType(){
+        return $($propertyType).val();
+    }
+
+    function getPropertySubType(){
+        return $($subType).val();
+    }
+
+    function getCity(){
+        return $($city).val();
+    }
+
+    function getLocation(){
+        return $($location).val();
+    }
+
+    function getLatitude(){
+        return $($lat).val();
+    }
+
+    function getLongitude(){
+        return $($lng).val();
+    }
+
+    function getSubmitAction(){
+        return $($submit_listing).attr('data-action');
+    }
+
+    function getListingCoordinates(){
+        return (getSubmitAction() === 'edit') ? {lat : parseFloat($($submit_listing).attr('data-lat')), lng : parseFloat($($submit_listing).attr('data-lng'))} : null;
+    }
+
+    function getListingID(){
+        return (getSubmitAction() === 'edit') ? $($submit_listing).attr('data-listing-id') : null;
+    }
+
+    class Listing{
+
+        constructor(){
+            $($submit_listing).on('click', this.handleListingSubmission);
+        }
+
+        handleListingSubmission(e) {
+
+            e.preventDefault();
+            let name = getName(),
+                description = getDescription(),
+                price = getPrice(),
+                land_area = getLandArea(),
+                area_units = getAreaUnits(),
+                expire_after = getExpireDate(),
+                purpose = getPurpose(),
+                propertyType = getPropertyType(),
+                subType = getPropertySubType(),
+                city = getCity(),
+                location = getLocation(),
+                lat = getLatitude(),
+                lng = getLongitude();
+
+            $.ajax({
+                type : 'POST',
+                url : '/user/listing/validate',
+                data : {
+                    _token : $('meta[name=_token]').attr('content'),
+                    name : name,
+                    description : description,
+                    price: price,
+                    land_area : land_area,
+                    area_units : area_units,
+                    expire_after : expire_after,
+                    purpose : purpose,
+                    propertyType : propertyType,
+                    subType : subType,
+                    city : city,
+                    location : location,
+                },
+                success : function(res){
+                    if(res.passes){
+                        $('.listing-errors').hide();
+                        if(action === 'add'){
+                            if(!myDropzone.getQueuedFiles().length){
+                                renderListingErrors({
+                                    'image' :   'Please upload property pictures'
+                                });
+                            }else{
+                                createListing(
+                                    name, description, price, land_area,
+                                    area_units, expire_after, purpose,
+                                    propertyType, subType, city, location,
+                                    lat,lng
+                                );
+                            }
+                        }else{
+                            console.log(remove_queue);
+                            if(!myDropzone.files.length){
+                                renderListingErrors({
+                                    'image' :   'Please upload property pictures'
+                                });
+                            }else{
+                                updateListing(
+                                    name, description, price, land_area,
+                                    area_units, expire_after, purpose,
+                                    propertyType, subType, city, location,
+                                    lat,lng
+                                );
+                            }
+                        }
+                    }else{
+                        renderListingErrors(res.errors);
+                        e.preventDefault();
+                    }
+                }
             });
         }
     }
+
+    new Listing();
 
     Dropzone.autoDiscover = false;
     myDropzone = new Dropzone('div#dropzone', {
@@ -42,7 +190,7 @@ APP.SUBMIT_LISTING = () => {
         },
 
         init : function(){
-            $('#dropzone').addClass('dropzone');
+            $($dropzone).addClass('dropzone');
             if(action === 'edit'){
                 $.ajax({
                     type : 'GET',
@@ -52,7 +200,7 @@ APP.SUBMIT_LISTING = () => {
                     },
                     success : function(images){
                         $.map(images, function(image){
-                            var mockFile = {
+                            let mockFile = {
                                 name: image.image_uri,
                                 size: 12345,
                                 type: 'image/jpeg',
@@ -79,7 +227,7 @@ APP.SUBMIT_LISTING = () => {
             }else if(action === 'add'){
                 this.on('complete', function(){
                     if (!getFailedFilesCount(this.files) && this.getUploadingFiles().length === 0 && this.getQueuedFiles().length === 0) {
-                        window.location = '/user/properties';
+                        window.location = '/user/properties/pending';
                     }
                 });
 
@@ -90,7 +238,7 @@ APP.SUBMIT_LISTING = () => {
         }
     });
 
-    let getQueuedFilesCount = (files) =>{
+    function getQueuedFilesCount(files){
         let counter = 0;
         $.map(files, function(file){
             console.log(file);
@@ -99,9 +247,9 @@ APP.SUBMIT_LISTING = () => {
             }
         });
         return counter;
-    };
+    }
 
-    let getFailedFilesCount = (files) => {
+    function getFailedFilesCount(files){
         let counter = 0;
         $.map(files, function(file){
             console.log(file);
@@ -110,88 +258,16 @@ APP.SUBMIT_LISTING = () => {
             }
         });
         return counter;
-    };
-
-    $("#submit-listing").on('click', function(e){
-        e.preventDefault();
-        let name = $("#property_title").val(),
-            description = $("#description").val(),
-            price = $("#price").val(),
-            land_area = $("#land_area").val(),
-            area_units = $("#area_units").val(),
-            expire_after = $("#expire_after").val(),
-            purpose = $("#purpose").val(),
-            propertyType = $("#propertyType").val(),
-            subType = $('#subType').val(),
-            city = $("#city").val(),
-            location = $("#location").val(),
-            lat = $("#lat").val(),
-            lng = $("#lng").val();
-
-        $.ajax({
-            type : 'POST',
-            url : '/user/listing/validate',
-            data : {
-                _token : $('meta[name=_token]').attr('content'),
-                name : name,
-                description : description,
-                price: price,
-                land_area : land_area,
-                area_units : area_units,
-                expire_after : expire_after,
-                purpose : purpose,
-                propertyType : propertyType,
-                subType : subType,
-                city : city,
-                location : location,
-            },
-            success : function(res){
-                if(res.passes){
-                    $('.listing-errors').hide();
-                    if(action === 'add'){
-                        if(!myDropzone.getQueuedFiles().length){
-                            renderListingErrors({
-                                'image' :   'Please upload property pictures'
-                            });
-                        }else{
-                            createListing(
-                                name, description, price, land_area,
-                                area_units, expire_after, purpose,
-                                propertyType, subType, city, location,
-                                lat,lng
-                            );
-                        }
-                    }else{
-                        console.log(remove_queue);
-                        if(!myDropzone.files.length){
-                            renderListingErrors({
-                                'image' :   'Please upload property pictures'
-                            });
-                        }else{
-                            updateListing(
-                                name, description, price, land_area,
-                                area_units, expire_after, purpose,
-                                propertyType, subType, city, location,
-                                lat,lng
-                            );
-                        }
-                    }
+    }
 
 
-                }else{
-                    renderListingErrors(res.errors);
-                    e.preventDefault();
-                }
-            }
-        })
-    });
 
-    let createListing = (
+    function createListing(
         name, description, price, land_area,
         area_units, expire_after, purpose,
         propertyType, subType, city, location,
         lat,lng
-    ) => {
+    ){
         $.ajax({
             type : 'POST',
             url : '/user/submit_property',
@@ -219,18 +295,18 @@ APP.SUBMIT_LISTING = () => {
                 }
             }
         })
-    };
+    }
 
     let uploadListingImages = () => {
         myDropzone.processQueue();
     };
 
-    let updateListing = (
+    function updateListing(
         name, description, price, land_area,
         area_units, expire_after, purpose,
         propertyType, subType, city, location,
         lat,lng
-    ) => {
+    ){
         $.ajax({
             type : 'POST',
             url : '/user/listing/update',
@@ -271,9 +347,9 @@ APP.SUBMIT_LISTING = () => {
                 }
             }
         })
-    };
+    }
 
-    let executeRemoveQueue = (queue) => {
+    function executeRemoveQueue(queue){
         $.ajax({
             type : 'DELETE',
             url : '/upload',
@@ -282,10 +358,10 @@ APP.SUBMIT_LISTING = () => {
                 images : queue
             }
         })
-    };
+    }
 
 
-    $("#city").on('change', function(e){
+    $($city).on('change', function(e){
         removeListingCoords();
         if(this.value.length){
             let city_id = $(this).val();
@@ -316,7 +392,7 @@ APP.SUBMIT_LISTING = () => {
         }
     });
 
-    $("#location").on('change', function(e){
+    $($location).on('change', function(e){
         removeListingCoords();
 
         if(this.value.length){
@@ -354,7 +430,7 @@ APP.SUBMIT_LISTING = () => {
     });
 
 
-    $('#propertyType').on('change', function(e){
+    $($propertyType).on('change', function(e){
         if(this.value.length){
             renderSubType(this.value);
             showSubTypes();
@@ -364,7 +440,7 @@ APP.SUBMIT_LISTING = () => {
         }
     });
 
-    let renderSubType = (type) => {
+    function renderSubType(type){
 
         clearSubTypes();
         let types = {
@@ -396,25 +472,25 @@ APP.SUBMIT_LISTING = () => {
         };
         $.map(types[type], function(type, index) {
             let $type = `<option value="${type}">${type}</option>`;
-            $('#subType').append($type);
+            $($subType).append($type);
         });
     };
 
-    let clearSubTypes = () => {
-        $('#subType').empty().append('<option value="">Select Sub Type</option>');
-    };
+    function clearSubTypes(){
+        $($subType).empty().append('<option value="">Select Sub Type</option>');
+    }
 
-    let hideSubTypes = () => {
+    function hideSubTypes(){
         $('.sub-types').hide();
-    };
+    }
 
 
-    let showSubTypes = () => {
+    function showSubTypes(){
         $('.sub-types').show();
-    };
+    }
 
 
-    let placeMarker = (location) => {
+    function placeMarker(location){
         if (marker == null) {
             marker = new google.maps.Marker({
                 position: location,
@@ -429,7 +505,7 @@ APP.SUBMIT_LISTING = () => {
     };
 
 
-    let initListingsMap = (lat,lng) => {
+    function initListingsMap(lat,lng){
         let mapOptions = {
             zoom: 14,
             center: new google.maps.LatLng(lat,lng)
@@ -444,19 +520,19 @@ APP.SUBMIT_LISTING = () => {
         });
 
         toggleListingMap('show');
-    };
+    }
 
-    let setListingCoords = (lat,lng) => {
+    function setListingCoords(lat,lng){
         $('#lat').val(lat);
         $('#lng').val(lng);
-    };
+    }
 
-    let removeListingCoords = () => {
+    function removeListingCoords(){
         $('#lat').val('');
         $('#lng').val('');
-    };
+    }
 
-    let renderListingErrors = (errors) => {
+    function renderListingErrors(errors){
         clearListingErrors();
         $.map(errors, function(value, index) {
             let $err = `<ul>`;
@@ -475,9 +551,9 @@ APP.SUBMIT_LISTING = () => {
     };
 
 
-    let clearListingErrors = () => {
+    function clearListingErrors(){
         $('.listing-errors > .errors').empty();
-    };
+    }
 
     function getKeySafeName(str) {
         return str// insert a space before all caps
@@ -487,30 +563,28 @@ APP.SUBMIT_LISTING = () => {
     }
 
 
-    let renderLocationList = (locations) => {
+    function renderLocationList(locations){
         clearLocations();
         $.map(locations, function(town, index) {
-            let $location = `<option value="${town.id}" data-name="${town.name}">${town.name}</option>`;
-            $('#location').append($location);
+            let $loc = `<option value="${town.id}" data-name="${town.name}">${town.name}</option>`;
+            $($location).append($loc);
         });
         $(".selectpicker").selectpicker('refresh');
+    }
+
+    function clearLocations(){
+        $($location).empty().append('<option value="">Select from list</option>');
     };
 
-
-    let clearLocations = () => {
-        $('#location').empty().append('<option value="">Select from list</option>');
-    };
-
-
-    let hideLocations = () => {
+    function hideLocations(){
         $('.available-towns').hide();
-    };
+    }
 
-    let showLocations = () => {
+    function showLocations(){
         $('.available-towns').show();
     };
 
-    let toggleListingMap = (action) => {
+    function toggleListingMap(action){
         switch(action){
             case 'hide':
                 $('.location-map').hide();
@@ -519,9 +593,24 @@ APP.SUBMIT_LISTING = () => {
                 $('.location-map').show();
                 break;
         }
-    };
+    }
 
-    let clearMarkers = (marker) => {
+    function clearMarkers(marker){
         marker.setMap(null);
-    };
+    }
+
+    if(action === 'edit'){
+        if(!map){
+            initListingsMap(coords.lat, coords.lng);
+            placeMarker({
+                lat : coords.lat,
+                lng : coords.lng
+            });
+        }else{
+            placeMarker({
+                lat : coords.lat,
+                lng : coords.lng
+            });
+        }
+    }
 };

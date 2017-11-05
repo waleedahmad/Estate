@@ -16,13 +16,7 @@
     </section><!-- end subheader section -->
 
     <!-- start my properties list -->
-    <section
-            class="properties submit-property"
-            data-lat="{{$listing->location ? $listing->location->lat : $listing->town->coords->lat}}"
-            data-lng="{{$listing->location ? $listing->location->lng : $listing->town->coords->lng}}"
-            data-action="edit"
-            data-listing-id="{{$listing->id}}"
-    >
+    <section class="properties">
         <div class="container">
             <form method="post" action="/user/update_property">
                 <div class="row">
@@ -223,7 +217,16 @@
 
                     <div class="col-lg-4 col-lg-offset-4 col-md-4">
                         <div class="formBlock">
-                            <input class="buttonColor" id="submit-listing" type="submit" value="UPDATE PROPERTY">
+                            <input
+                                    class="buttonColor"
+                                    id="submit-listing"
+                                    data-action="edit"
+                                    type="submit"
+                                    value="UPDATE PROPERTY"
+                                    data-listing-id="{{$listing->id}}"
+                                    data-lat="{{$listing->location ? $listing->location->lat : $listing->town->coords->lat}}"
+                                    data-lng="{{$listing->location ? $listing->location->lng : $listing->town->coords->lng}}"
+                            >
                         </div>
                     </div>
                 </div><!-- end row -->
@@ -241,4 +244,10 @@
 @section('styles')
     <link rel="stylesheet" href="/css/dropzone.css">
     <link rel="stylesheet" href="/lib/bootstrap-select/dist/css/bootstrap-select.css">
+@endSection
+
+@section('post_scripts')
+    <script>
+        APP.SUBMIT_LISTING();
+    </script>
 @endSection

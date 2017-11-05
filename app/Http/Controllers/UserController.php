@@ -26,7 +26,7 @@ class UserController extends Controller
             $agent->description = '';
             $user->type = 'agent';
 
-            if($agent->save() && $user->Tier->delete() && $user->save()){
+            if($agent->save() && ($user->Tier ? $user->Tier->delete() : true) && $user->save()){
                 return response()->json(true);
             }
         }else if($type === 'user'){
