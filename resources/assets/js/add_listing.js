@@ -1,14 +1,5 @@
 APP.SUBMIT_LISTING = () => {
 
-    let geocoder,
-        map,
-        marker,
-        myDropzone,
-        action = getSubmitAction(),
-        coords = getListingCoordinates(),
-        listing_id = getListingID(),
-        remove_queue = [];
-
     let $submit_listing = $('#submit-listing'),
         $dropzone = $('#dropzone'),
         $name = $("#property_title"),
@@ -20,10 +11,23 @@ APP.SUBMIT_LISTING = () => {
         $purpose = $("#purpose"),
         $propertyType = $("#propertyType"),
         $subType = $('#subType'),
+        $subTypes = $('.sub-types'),
         $city = $("#city"),
         $location = $("#location"),
         $lat = $("#lat"),
         $lng = $("#lng");
+
+    let geocoder,
+        map,
+        marker,
+        myDropzone,
+        action = getSubmitAction(),
+        coords = getListingCoordinates(),
+        listing_id = getListingID(),
+        remove_queue = [];
+        console.log(action);
+
+
 
     function getName(){
         return $($name).val();
@@ -92,7 +96,7 @@ APP.SUBMIT_LISTING = () => {
     class Listing{
 
         constructor(){
-            $($submit_listing).on('click', this.handleListingSubmission);
+            $($submit_listing).on('click', this.handleListingSubmission.bind(this));
         }
 
         handleListingSubmission(e) {
@@ -130,6 +134,7 @@ APP.SUBMIT_LISTING = () => {
                     location : location,
                 },
                 success : function(res){
+                    console.log(action);
                     if(res.passes){
                         $('.listing-errors').hide();
                         if(action === 'add'){
@@ -138,7 +143,7 @@ APP.SUBMIT_LISTING = () => {
                                     'image' :   'Please upload property pictures'
                                 });
                             }else{
-                                createListing(
+                                this.createListing(
                                     name, description, price, land_area,
                                     area_units, expire_after, purpose,
                                     propertyType, subType, city, location,
@@ -152,7 +157,7 @@ APP.SUBMIT_LISTING = () => {
                                     'image' :   'Please upload property pictures'
                                 });
                             }else{
-                                updateListing(
+                                this.updateListing(
                                     name, description, price, land_area,
                                     area_units, expire_after, purpose,
                                     propertyType, subType, city, location,
@@ -164,9 +169,119 @@ APP.SUBMIT_LISTING = () => {
                         renderListingErrors(res.errors);
                         e.preventDefault();
                     }
-                }
+                }.bind(this)
             });
         }
+
+        createListing(
+            name, description, price, land_area,
+            area_units, expire_after, purpose,
+            propertyType, subType, city, location,
+            lat,lng
+        ){
+            $.ajax({
+                type : 'POST',
+                url : '/user/submit_property',
+                data: {
+                    _token : $('meta[name=_token]').attr('content'),
+                    name : name,
+                    description : description,
+                    price: price,
+                    land_area : land_area,
+                    area_units : area_units,
+                    expire_after : expire_after,
+                    purpose : purpose,
+                    propertyType : propertyType,
+                    subType : subType,
+                    city : city,
+                    location : location,
+                    lat : lat,
+                    lng : lng
+                },
+                success : function(res){
+                    console.log(res);
+                    if(res.created){
+                        listing_id = res.listing_id;
+                        this.uploadListingImages();
+                    }
+                }.bind(this)
+            })
+        }
+
+        updateListing(
+            name, description, price, land_area,
+            area_units, expire_after, purpose,
+            propertyType, subType, city, location,
+            lat,lng
+        ){
+            $.ajax({
+                type : 'POST',
+                url : '/user/listing/update',
+                data: {
+                    _token : $('meta[name=_token]').attr('content'),
+                    id : listing_id,
+                    name : name,
+                    description : description,
+                    price: price,
+                    land_area : land_area,
+                    area_units : area_units,
+                    expire_after : expire_after,
+                    purpose : purpose,
+                    propertyType : propertyType,
+                    subType : subType,
+                    city : city,
+                    location : location,
+                    lat : lat,
+                    lng : lng
+                },
+                success : function(res){
+                    if(res.updated){
+
+                        if(remove_queue.length){
+                            this.executeRemoveQueue(remove_queue);
+                        }
+
+                        if(this.getQueuedFilesCount(myDropzone.files)){
+                            myDropzone.on('complete', function(){
+                                if (myDropzone.getUploadingFiles().length === 0 && myDropzone.getQueuedFiles().length === 0) {
+                                    window.location = '/property/'+listing_id;
+                                }
+                            });
+                            this.uploadListingImages();
+                        }else{
+                            window.location = '/property/'+listing_id;
+                        }
+                    }
+                }.bind(this)
+            })
+        }
+
+        uploadListingImages(){
+            myDropzone.processQueue();
+        }
+
+        executeRemoveQueue(queue){
+            $.ajax({
+                type : 'DELETE',
+                url : '/upload',
+                data : {
+                    _token : $('meta[name=_token]').attr('content'),
+                    images : queue
+                }
+            })
+        }
+
+        getQueuedFilesCount(files){
+            let counter = 0;
+            $.map(files, function(file){
+                console.log(file);
+                if(file.status === 'queued'){
+                    counter++;
+                }
+            });
+            return counter;
+        }
+
     }
 
     new Listing();
@@ -238,17 +353,6 @@ APP.SUBMIT_LISTING = () => {
         }
     });
 
-    function getQueuedFilesCount(files){
-        let counter = 0;
-        $.map(files, function(file){
-            console.log(file);
-            if(file.status === 'queued'){
-                counter++;
-            }
-        });
-        return counter;
-    }
-
     function getFailedFilesCount(files){
         let counter = 0;
         $.map(files, function(file){
@@ -258,106 +362,6 @@ APP.SUBMIT_LISTING = () => {
             }
         });
         return counter;
-    }
-
-
-
-    function createListing(
-        name, description, price, land_area,
-        area_units, expire_after, purpose,
-        propertyType, subType, city, location,
-        lat,lng
-    ){
-        $.ajax({
-            type : 'POST',
-            url : '/user/submit_property',
-            data: {
-                _token : $('meta[name=_token]').attr('content'),
-                name : name,
-                description : description,
-                price: price,
-                land_area : land_area,
-                area_units : area_units,
-                expire_after : expire_after,
-                purpose : purpose,
-                propertyType : propertyType,
-                subType : subType,
-                city : city,
-                location : location,
-                lat : lat,
-                lng : lng
-            },
-            success : function(res){
-                console.log(res);
-                if(res.created){
-                    listing_id = res.listing_id;
-                    uploadListingImages();
-                }
-            }
-        })
-    }
-
-    let uploadListingImages = () => {
-        myDropzone.processQueue();
-    };
-
-    function updateListing(
-        name, description, price, land_area,
-        area_units, expire_after, purpose,
-        propertyType, subType, city, location,
-        lat,lng
-    ){
-        $.ajax({
-            type : 'POST',
-            url : '/user/listing/update',
-            data: {
-                _token : $('meta[name=_token]').attr('content'),
-                id : listing_id,
-                name : name,
-                description : description,
-                price: price,
-                land_area : land_area,
-                area_units : area_units,
-                expire_after : expire_after,
-                purpose : purpose,
-                propertyType : propertyType,
-                subType : subType,
-                city : city,
-                location : location,
-                lat : lat,
-                lng : lng
-            },
-            success : function(res){
-                if(res.updated){
-
-                    if(remove_queue.length){
-                        executeRemoveQueue(remove_queue);
-                    }
-
-                    if(getQueuedFilesCount(myDropzone.files)){
-                        myDropzone.on('complete', function(){
-                            if (myDropzone.getUploadingFiles().length === 0 && myDropzone.getQueuedFiles().length === 0) {
-                                window.location = '/property/'+listing_id;
-                            }
-                        });
-                        uploadListingImages();
-                    }else{
-                        window.location = '/property/'+listing_id;
-                    }
-                }
-            }
-        })
-    }
-
-    function executeRemoveQueue(queue){
-        $.ajax({
-            type : 'DELETE',
-            url : '/upload',
-            data : {
-                _token : $('meta[name=_token]').attr('content'),
-                images : queue
-            }
-        })
     }
 
 
@@ -481,12 +485,12 @@ APP.SUBMIT_LISTING = () => {
     }
 
     function hideSubTypes(){
-        $('.sub-types').hide();
+        $($subTypes).hide();
     }
 
 
     function showSubTypes(){
-        $('.sub-types').show();
+        $($subTypes).show();
     }
 
 

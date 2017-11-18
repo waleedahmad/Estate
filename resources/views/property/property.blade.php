@@ -78,7 +78,7 @@
                                         <a class="propertyType" href="/property/{{$listed->id}}">{{$listed->sub_type}}</a>
                                         <a href="/property/{{$listed->id}}" class="propertyImgLink">
                                             <div class="recentListings">
-                                                <img class="propertyImg" src="/storage/{{$listing->images->first()->image_uri}}" alt="" />
+                                                <img class="propertyImg" src="/storage/{{$listed->images->first()->image_uri}}" alt="" />
                                             </div>
                                         </a>
                                         <h4><a href="/property/{{$listed->id}}">{{$listed->title}}</a></h4>

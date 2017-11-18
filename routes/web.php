@@ -2,6 +2,17 @@
 
 Auth::routes();
 
+/*
+ * GET /login
+POST /login
+GET /register
+POST /register
+GET /password/reset/{token}
+GET /password/reset
+POST /password/reset
+*/
+
+
 Route::get('/logout', 'Auth\LoginController@logout');
 
 Route::get('/', 'HomeController@getIndex');
@@ -52,9 +63,6 @@ Route::group(['middleware'  =>  ['auth']], function(){
     Route::post('/user/properties/remove_favorite', 'PropertyController@removeListingFavorites');
 
     Route::get('/user/properties/pending', 'PropertyController@getPendingProperties');
-
-
-
 });
 
 
