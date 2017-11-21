@@ -29,21 +29,7 @@
                 <!-- start left column -->
                 <div class="col-lg-4 col-md-4">
                     <img class="contactImg" src="/images/office-building.jpg" alt="" />
-                    <p>Duis elementum ullamcorper mi, ut sit ullamcorper
-                        urna fringilla eget. In in non lectus sit amet lorem
-                        convallis lorem et quis nunc. Sed ullamcorper purus. Duis elementum ullamcorper
-                        mi, ut sit ullamcorper urna fringilla eget. In in non
-                        lectus sit amet lorem convallis lorem et quis nunc.
-                        Sed ullamcorper purus.</p>
-
-                    <p>Duis elementum ullamcorper mi, ut sit ullamcorper
-                        urna fringilla eget. In in non lectus sit amet lorem
-                        convallis lorem et quis nunc.</p>
-
-                    <p>Sed ullamcorper purus.Duis elementum ullamcorper
-                        mi, ut sit ullamcorper urna fringilla eget. In in non
-                        lectus sit amet lorem convallis lorem et quis nunc.
-                        Sed ullamcorper purus.</p>
+                    <p>{{\App\Config::where('name', '=', 'description')->first()->value}}</p>
                 </div><!-- end left column -->
 
                 <!-- start contact form -->
@@ -53,9 +39,9 @@
                             <h3>GET IN TOUCH</h3>
                             <div class="divider"></div>
                             <ul class="contactDetails">
-                                <li><img src="/images/icon-mail.png" alt="" />info@easyLivingTheme.com</li>
-                                <li><img src="/images/icon-phone.png" alt="" />1-800-192-0978</li>
-                                <li><img src="/images/icon-pin.png" alt="" />467 Smith Drive Baltimore, MD</li>
+                                <li><img src="/images/icon-mail.png" alt="" />{{\App\Config::where('name', '=', 'email')->first()->value}}</li>
+                                <li><img src="/images/icon-phone.png" alt="" />{{\App\Config::where('name', '=', 'phone')->first()->value}}</li>
+                                <li><img src="/images/icon-pin.png" alt="" />{{\App\Config::where('name', '=', 'address')->first()->value}}</li>
                             </ul>
                             <form method="post" action="#">
                                 <div class="row">

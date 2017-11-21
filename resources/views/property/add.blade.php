@@ -150,8 +150,17 @@
 
                                 <div class="col-lg-12 col-md-12 col-sm-6 available-towns">
                                     <div class="formBlock">
-                                        <label for="location">Location</label><br/>
-                                        <select name="location" id="location" class="formDropdown selectpicker" data-live-search="true" data-width="100%">
+                                        <label for="town">Town</label><br/>
+                                        <select name="town" id="town" class="formDropdown selectpicker" data-live-search="true" data-width="100%">
+                                            <option value="">Select from list</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12 col-sm-6 available-blocks">
+                                    <div class="formBlock">
+                                        <label for="blocks">Blocks</label><br/>
+                                        <select name="blocks" id="block" class="formDropdown selectpicker" data-live-search="true" data-width="100%">
                                             <option value="">Select from list</option>
                                         </select>
                                     </div>

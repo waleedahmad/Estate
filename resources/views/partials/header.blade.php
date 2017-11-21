@@ -18,8 +18,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/"><img src="/images/logoGreen.png" alt="Easy Living"/>{{\App\Config::where('name', '=', 'app_name')->first()->value}}
-                <span>Estate</span></a>
+            <a class="navbar-brand" href="/"> {{\App\Config::where('name', '=', 'app_name')->first()->value}}<span>Estate</span></a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
@@ -57,13 +56,19 @@
                             @if(Auth::user()->type === 'admin')
                                 <li>
                                     <a href="/admin" class="dropdown-toggle buttonGrey">
-                                        DASHBOARD
+                                        Dashboard ({{Auth::user()->type}})
                                     </a>
                                 </li>
                             @else
                                 <li>
+                                    <a href="/user/messages">
+                                        <i class="glyphicon glyphicon-envelope"></i>
+                                    </a>
+                                </li>
+
+                                <li>
                                     <a href="/user/dashboard" class="dropdown-toggle buttonGrey">
-                                        Dashboard
+                                        Dashboard ({{Auth::user()->type}})
                                     </a>
                                 </li>
                             @endif

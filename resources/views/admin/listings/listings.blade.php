@@ -85,7 +85,7 @@
                                                 <p class="price">PKR {{$listing->price}}</p>
                                                 <p class="forSale">For {{$listing->purpose}}</p>
                                                 <h4><a target="_blank" href="/property/{{$listing->id}}">{{$listing->title}}</a></h4><br/>
-                                                <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                                                <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                                                 <p>{{$listing->description}}</p><br/>
                                                 <table border="1" class="propertyDetails">
                                                     <tr>

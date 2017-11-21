@@ -11,6 +11,7 @@ class AdminSeeder extends Seeder
      */
     public function run()
     {
+        \App\User::truncate();
         $user = new \App\User();
         $user->email = env('ADMIN_EMAIL');
         $user->name = env('ADMIN_NAME');

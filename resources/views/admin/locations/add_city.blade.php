@@ -20,8 +20,23 @@
 
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 ">
             <div class="col-lg-6">
-                <form method="post" action="/admin/locations/cities/add" enctype="multipart/form-data">
+                <form method="post" action="/admin/cities" enctype="multipart/form-data">
                     <div class="row">
+
+                        <div class="formBlock">
+                            <label for="state">State</label><br/>
+                            <select name="state" id="state" class="formDropdown">
+                                <option value="">Select State</option>
+                                @foreach(\App\State::all() as $state)
+                                    <option value="{{$state->id}}">{{$state->name}}</option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('state'))
+                                <div class="err">
+                                    * {{$errors->first('state')}}
+                                </div>
+                            @endif
+                        </div>
 
                         <div class="formBlock">
                             <label for="city">City Name</label><br/>

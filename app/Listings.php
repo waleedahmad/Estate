@@ -11,12 +11,16 @@ class Listings extends Model
 
     protected $dates = ['expire_after'];
 
+    public function user(){
+        return $this->hasOne('App\User', 'id', 'user_id');
+    }
+
     public function images(){
         return $this->hasMany('App\ListingImages', 'listing_id', 'id');
     }
 
-    public function town(){
-        return $this->hasOne('App\Towns', 'id', 'town_id');
+    public function block(){
+        return $this->hasOne('App\Blocks', 'id', 'block_id');
     }
 
     public function location(){

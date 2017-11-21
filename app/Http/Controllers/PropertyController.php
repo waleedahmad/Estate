@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Blocks;
 use App\Cities;
 use App\FavoriteListings;
 use App\ListingLocation;
@@ -52,7 +53,7 @@ class PropertyController extends Controller
         $listing->purpose = $request->purpose;
         $listing->type = $request->propertyType;
         $listing->sub_type = $request->subType;
-        $listing->town_id = $request->location;
+        $listing->block_id = $request->location;
         $listing->show_slider = false;
         $listing->show_recent = false;
         $listing->user_id = Auth::id();
@@ -93,7 +94,7 @@ class PropertyController extends Controller
         $listing->purpose = $request->purpose;
         $listing->type = $request->propertyType;
         $listing->sub_type = $request->subType;
-        $listing->town_id = $request->location;
+        $listing->block_id = $request->location;
 
         if($listing->save()){
             if(strlen($request->lat) && strlen($request->lng)){
@@ -143,7 +144,8 @@ class PropertyController extends Controller
             'propertyType'  =>  'required',
             'subType'   =>  'required',
             'city'  =>  'required',
-            'location'  =>  'required'
+            'town'  =>  'required',
+            'block' =>  'required'
         ]);
 
         if($validator->passes()){
@@ -159,14 +161,19 @@ class PropertyController extends Controller
         }
     }
 
-    public function getCityLocations(Request $request){
+    public function getCityTowns(Request $request){
         $city = Cities::find($request->id);
         return response()->json($city->towns->toArray());
     }
 
-    public function getTownInfo(Request $request){
-        $town = Towns::with('coords')->find($request->id);
-        return response()->json($town);
+    public function getTownBlocks(Request $request){
+        $town = Towns::find($request->id);
+        return response()->json($town->blocks->toArray());
+    }
+
+    public function getBlockInfo(Request $request){
+        $block = Blocks::with('coords')->find($request->id);
+        return response()->json($block);
     }
 
     public function removeListing(Request $request){

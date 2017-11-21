@@ -23,14 +23,9 @@
                 <!-- start left column -->
                 <div class="col-lg-4 col-md-4">
                     <div id="map-canvas-one-pin" class="mapSmall"></div>
-                    <p>Duis elementum ullamcorper mi, ut sit ullamcorper
-                        urna fringilla eget. In in non lectus sit amet lorem
-                        convallis lorem et quis nunc.</p>
-
-                    <p>Sed ullamcorper purus.Duis elementum ullamcorper
-                        mi, ut sit ullamcorper urna fringilla eget. In in non
-                        lectus sit amet lorem convallis lorem et quis nunc.
-                        Sed ullamcorper purus.</p><br/>
+                    <p>
+                        {{\App\Config::where('name', '=', 'description')->first()->value}}
+                    </p><br/>
                 </div><!-- end left column -->
 
                 <!-- start contact form -->
@@ -40,9 +35,9 @@
                             <h3>GET IN TOUCH</h3>
                             <div class="divider"></div>
                             <ul class="contactDetails">
-                                <li><img src="/images/icon-mail.png" alt="" />info@easyLivingTheme.com</li>
-                                <li><img src="/images/icon-phone.png" alt="" />1-800-192-0978</li>
-                                <li><img src="/images/icon-pin.png" alt="" />467 Smith Drive Baltimore, MD</li>
+                                <li><img src="/images/icon-mail.png" alt="" />{{\App\Config::where('name', '=', 'email')->first()->value}}</li>
+                                <li><img src="/images/icon-phone.png" alt="" />{{\App\Config::where('name', '=', 'phone')->first()->value}}</li>
+                                <li><img src="/images/icon-pin.png" alt="" />{{\App\Config::where('name', '=', 'address')->first()->value}}</li>
                             </ul>
                             <form method="post" action="http://rypepixel.com/easy-living/contact.php" id="contact-us">
                                 <div class="row">

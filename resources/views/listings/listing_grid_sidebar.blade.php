@@ -41,8 +41,8 @@
                                                     <img class="propertyImg" src="/storage/{{$listing->images->first()->image_uri}}" alt="" />
                                                 </div>
                                             </a>
-                                            <h4><a href="/property/{{$listing->id}}">{{$listing->town->name}}, {{$listing->town->city->name}}</a></h4>
-                                            <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                                            <h4><a href="/property/{{$listing->id}}">{{$listing->block->town->name}}, {{$listing->block->town->city->name}}</a></h4>
+                                            <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                                             <div class="divider thin"></div>
                                             <p class="forSale">For {{$listing->purpose}}</p>
                                             <p class="price">PKR {{$listing->price}}</p>

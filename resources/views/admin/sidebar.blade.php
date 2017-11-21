@@ -20,6 +20,6 @@
 
     <a @if(Request::path() === 'admin/agents') class="active" @endif  href="/admin/agents">Agents</a>
 
-    <a @if(Request::is('admin/locations*')) class="active" @endif  href="/admin/locations">Locations</a>
+    <a @if(Request::is('admin/cities*')) class="active" @endif  href="/admin/cities">Locations</a>
 
 </div>

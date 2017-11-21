@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Agents;
 use App\Layout;
 use App\User;
 use Illuminate\Http\Request;
@@ -34,5 +35,10 @@ class AgentController extends Controller
             return response()->json(true);
         }
         return response()->json(false);
+    }
+
+    public function getAgent($id){
+        $agent = User::find($id);
+        return view('agent.single')->with('agent', $agent);
     }
 }

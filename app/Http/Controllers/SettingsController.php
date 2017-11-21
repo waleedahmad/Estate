@@ -103,4 +103,15 @@ class SettingsController extends Controller
     private function deleteProfilePicture(){
         return Storage::disk('public')->delete(Auth::user()->image_uri);
     }
+
+    public function updateAgentInfo(Request $request){
+        $agent = Auth::user()->Agent;
+        $agent->office_phone = $request->office_no;
+        $agent->facebook = $request->facebook;
+        $agent->twitter = $request->twitter;
+        $agent->google_plus = $request->google_plus;
+        if($agent->save()){
+            return redirect('/user/settings');
+        }
+    }
 }

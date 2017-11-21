@@ -13,9 +13,13 @@ APP.SUBMIT_LISTING = () => {
         $subType = $('#subType'),
         $subTypes = $('.sub-types'),
         $city = $("#city"),
-        $location = $("#location"),
+        $town = $("#town"),
+        $block = $("#block"),
         $lat = $("#lat"),
-        $lng = $("#lng");
+        $lng = $("#lng"),
+        $town_DOM = $('.available-towns'),
+        $block_DOM = $('.available-blocks'),
+        $location_map = $('.location-map');
 
     let geocoder,
         map,
@@ -28,69 +32,394 @@ APP.SUBMIT_LISTING = () => {
         console.log(action);
 
 
-
+    /**
+     * Listing Name
+     * @returns {*|jQuery}
+     */
     function getName(){
         return $($name).val();
     }
 
+
+    /**
+     * Listing Description
+     * @returns {*|jQuery}
+     */
     function getDescription(){
         return $($description).val();
     }
 
+    /**
+     * Listing Price
+     * @returns {*|jQuery}
+     */
     function getPrice(){
         return $($price).val();
     }
 
+    /**
+     * Listing Land Area
+     * @returns {*|jQuery}
+     */
     function getLandArea(){
         return $($land_area).val();
     }
 
+    /**
+     * Listing Area Units
+     * @returns {*|jQuery}
+     */
     function getAreaUnits(){
         return $($area_units).val();
     }
 
+    /**
+     * Listing Expire Date
+     * @returns {*|jQuery}
+     */
     function getExpireDate(){
         return $($expire_after).val();
     }
 
+    /**
+     * Listing Selling Purpose
+     * @returns {*|jQuery}
+     */
     function getPurpose(){
         return $($purpose).val();
     }
 
+    /**
+     * Listing Property Type
+     * @returns {*|jQuery}
+     */
     function getPropertyType(){
         return $($propertyType).val();
     }
 
+    /**
+     * Listing Property Sub Type
+     * @returns {*|jQuery}
+     */
     function getPropertySubType(){
         return $($subType).val();
     }
 
+    /**
+     * Listing City
+     * @returns {*|jQuery}
+     */
     function getCity(){
         return $($city).val();
     }
 
-    function getLocation(){
-        return $($location).val();
+    /**
+     * Listing Town
+     * @returns {*|jQuery}
+     */
+    function getTown(){
+        return $($town).val();
     }
 
+    /**
+     * Listing Block
+     * @returns {*|jQuery}
+     */
+    function getBlock(){
+        return $($block).val();
+    }
+
+    /**
+     * Listing Longitude
+     * @returns {*|jQuery}
+     */
     function getLatitude(){
         return $($lat).val();
     }
 
+    /**
+     * Listing Latitude
+     * @returns {*|jQuery}
+     */
     function getLongitude(){
         return $($lng).val();
     }
 
+    /**
+     * Listing Submit Action
+     * @returns {*|jQuery}
+     */
     function getSubmitAction(){
         return $($submit_listing).attr('data-action');
     }
 
+    /**
+     * Listing Coordinates
+     * @returns {*}
+     */
     function getListingCoordinates(){
         return (getSubmitAction() === 'edit') ? {lat : parseFloat($($submit_listing).attr('data-lat')), lng : parseFloat($($submit_listing).attr('data-lng'))} : null;
     }
 
+    /**
+     * Listing ID
+     * @returns {*}
+     */
     function getListingID(){
         return (getSubmitAction() === 'edit') ? $($submit_listing).attr('data-listing-id') : null;
+    }
+
+    /**
+     * Handle Listing City Change
+     */
+    $($city).on('change', function(e){
+        if(this.value.length){
+            let city_id = $(this).val();
+
+            $.ajax({
+                type : 'GET',
+                url : '/city/towns',
+                data : {
+                    id : city_id
+                },
+                success : function(res){
+                    if(res.length){
+                        renderTownList(res);
+                    }else{
+                        hideTownLists();
+                    }
+                }
+            });
+        }else{
+            hideTownLists();
+        }
+    });
+
+    $($town).on('change', function(e){
+        if(this.value.length){
+            let id = this.value;
+            $.ajax({
+                type : 'GET',
+                url : '/town/blocks',
+                data : {
+                    id : id
+                },
+                success : function(res){
+                    if(res.length){
+                        renderBlockList(res);
+                    }else{
+                        hideBlocksList();
+                    }
+                }
+            });
+        }else{
+            hideBlocksList();
+        }
+    });
+
+    $($block).on('change', function(e){
+        if(this.value.length){
+            let id = this.value;
+            $.ajax({
+                type : 'GET',
+                url : '/block/info',
+                data : {
+                    id : id
+                },
+                success : function(res){
+                    if(res){
+                        if(!map){
+                            initListingsMap(res.coords.lat, res.coords.lng);
+                            placeMarker({
+                                lat : res.coords.lat,
+                                lng : res.coords.lng
+                            });
+                        }else{
+                            placeMarker({
+                                lat : res.coords.lat,
+                                lng : res.coords.lng
+                            });
+                        }
+                        toggleListingMap('show');
+                    }else{
+                        toggleListingMap('hide');
+                    }
+                }
+            });
+        }else{
+            toggleListingMap('hide');
+        }
+    });
+
+
+    $($propertyType).on('change', function(e){
+        if(this.value.length){
+            renderSubType(this.value);
+            showSubTypes();
+        }else{
+            clearSubTypes();
+            hideSubTypes();
+        }
+    });
+
+    function renderSubType(type){
+        clearSubTypes();
+        let types = {
+            Home : [
+                'House',
+                'Flat',
+                'Upper Portion',
+                'Lower Portion',
+                'Farm House',
+                'Room',
+                'Penthouse'
+            ],
+            Plots : [
+                'Residential Plot',
+                'Commercial Plot',
+                'Agricultural Land',
+                'Industrial Land',
+                'Plot File',
+                'Plot Form'
+            ],
+            Commercial : [
+                'Office',
+                'Shop',
+                'Warehouse',
+                'Factory',
+                'Building',
+                'Other'
+            ]
+        };
+        $.map(types[type], function(type, index) {
+            let $type = `<option value="${type}">${type}</option>`;
+            $($subType).append($type);
+        });
+    };
+
+    function clearSubTypes(){
+        $($subType).empty().append('<option value="">Select Sub Type</option>');
+    }
+
+    function hideSubTypes(){
+        $($subTypes).hide();
+    }
+
+
+    function showSubTypes(){
+        $($subTypes).show();
+    }
+
+
+    function placeMarker(location){
+        if (marker == null) {
+            marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                zoom: 14
+            });
+        } else {
+            marker.setPosition(location);
+            marker.setMap(map);
+        }
+        map.setCenter(marker.getPosition());
+    };
+
+
+    function initListingsMap(lat,lng){
+        let mapOptions = {
+            zoom: 14,
+            center: new google.maps.LatLng(lat,lng)
+        };
+
+        geocoder = new google.maps.Geocoder();
+        map = new google.maps.Map(document.getElementById('listing-form-map'), mapOptions);
+
+        google.maps.event.addListener(map, 'click', function(event) {
+            setListingCoords(event.latLng.lat, event.latLng.lng);
+            placeMarker(event.latLng);
+        });
+
+        toggleListingMap('show');
+    }
+
+
+    function clearListingErrors(){
+        $('.listing-errors > .errors').empty();
+    }
+
+    function getKeySafeName(str) {
+        return str// insert a space before all caps
+            .replace(/([A-Z])/g, ' $1')
+            // uppercase the first character
+            .replace(/^./, function(str){ return str.toUpperCase(); })
+    }
+
+
+    function renderTownList(locations){
+        clearTownLists();
+        $.map(locations, function(town, index) {
+            let $loc = `<option value="${town.id}" data-name="${town.name}">${town.name}</option>`;
+            $($town).append($loc);
+        });
+        $(".selectpicker").selectpicker('refresh');
+        showTownList();
+    }
+
+    function renderBlockList(locations){
+        clearBlockLists();
+        $.map(locations, function(block, index) {
+            let $loc = `<option value="${block.id}" data-name="${block.name}">${block.name}</option>`;
+            $($block).append($loc);
+        });
+        $(".selectpicker").selectpicker('refresh');
+        showBlockList();
+    }
+
+    function clearTownLists(){
+        $($town).empty().append('<option value="">Select from list</option>');
+    };
+
+    function clearBlockLists(){
+        $($block).empty().append('<option value="">Select from list</option>');
+    }
+
+    function hideTownLists(){
+        $($town_DOM).hide();
+        clearTownLists();
+        hideBlocksList();
+        toggleListingMap('hide');
+    }
+
+    function hideBlocksList(){
+        $($block_DOM).hide();
+        clearBlockLists();
+        toggleListingMap('hide');
+    }
+
+    function showTownList(){
+        $($town_DOM).show();
+    };
+
+    function showBlockList(){
+        $($block_DOM).show();
+    };
+
+    function toggleListingMap(action){
+        switch(action){
+            case 'hide':
+                $($location_map).hide();
+                clearMarkers(marker);
+                break;
+            case 'show':
+                $($location_map).show();
+                break;
+        }
+    }
+
+    function clearMarkers(marker){
+        marker.setMap(null);
+        removeListingCoords();
     }
 
     class Listing{
@@ -100,6 +429,7 @@ APP.SUBMIT_LISTING = () => {
         }
 
         handleListingSubmission(e) {
+            console.log(getTown());
 
             e.preventDefault();
             let name = getName(),
@@ -112,7 +442,8 @@ APP.SUBMIT_LISTING = () => {
                 propertyType = getPropertyType(),
                 subType = getPropertySubType(),
                 city = getCity(),
-                location = getLocation(),
+                town = getTown(),
+                block = getBlock(),
                 lat = getLatitude(),
                 lng = getLongitude();
 
@@ -131,7 +462,8 @@ APP.SUBMIT_LISTING = () => {
                     propertyType : propertyType,
                     subType : subType,
                     city : city,
-                    location : location,
+                    town : town,
+                    block : block,
                 },
                 success : function(res){
                     console.log(action);
@@ -146,7 +478,7 @@ APP.SUBMIT_LISTING = () => {
                                 this.createListing(
                                     name, description, price, land_area,
                                     area_units, expire_after, purpose,
-                                    propertyType, subType, city, location,
+                                    propertyType, subType, city, block,
                                     lat,lng
                                 );
                             }
@@ -160,7 +492,7 @@ APP.SUBMIT_LISTING = () => {
                                 this.updateListing(
                                     name, description, price, land_area,
                                     area_units, expire_after, purpose,
-                                    propertyType, subType, city, location,
+                                    propertyType, subType, city, block,
                                     lat,lng
                                 );
                             }
@@ -364,176 +696,19 @@ APP.SUBMIT_LISTING = () => {
         return counter;
     }
 
-
-    $($city).on('change', function(e){
-        removeListingCoords();
-        if(this.value.length){
-            let city_id = $(this).val();
-
-            $.ajax({
-                type : 'GET',
-                url : '/city/locations',
-                data : {
-                    id : city_id
-                },
-                success : function(res){
-                    if(res.length){
-                        showLocations();
-                        renderLocationList(res);
-                    }else{
-                        clearLocations();
-                        hideLocations();
-                    }
-                }
+    if(action === 'edit'){
+        if(!map){
+            initListingsMap(coords.lat, coords.lng);
+            placeMarker({
+                lat : coords.lat,
+                lng : coords.lng
             });
         }else{
-
-            clearLocations();
-            hideLocations();
-            toggleListingMap('hide');
-            clearMarkers(marker);
-
-        }
-    });
-
-    $($location).on('change', function(e){
-        removeListingCoords();
-
-        if(this.value.length){
-            let id = this.value;
-            $.ajax({
-                type : 'GET',
-                url : '/town/info',
-                data : {
-                    id : id
-                },
-                success : function(res){
-                    if(res){
-                        if(!map){
-                            initListingsMap(res.coords.lat, res.coords.lng);
-                            placeMarker({
-                                lat : res.coords.lat,
-                                lng : res.coords.lng
-                            });
-                        }else{
-                            placeMarker({
-                                lat : res.coords.lat,
-                                lng : res.coords.lng
-                            });
-                        }
-                        toggleListingMap('show');
-                    }else{
-                        toggleListingMap('hide');
-                    }
-                }
+            placeMarker({
+                lat : coords.lat,
+                lng : coords.lng
             });
-        }else{
-            toggleListingMap('hide');
-            clearMarkers(marker);
         }
-    });
-
-
-    $($propertyType).on('change', function(e){
-        if(this.value.length){
-            renderSubType(this.value);
-            showSubTypes();
-        }else{
-            clearSubTypes();
-            hideSubTypes();
-        }
-    });
-
-    function renderSubType(type){
-
-        clearSubTypes();
-        let types = {
-            Home : [
-                'House',
-                'Flat',
-                'Upper Portion',
-                'Lower Portion',
-                'Farm House',
-                'Room',
-                'Penthouse'
-            ],
-            Plots : [
-                'Residential Plot',
-                'Commercial Plot',
-                'Agricultural Land',
-                'Industrial Land',
-                'Plot File',
-                'Plot Form'
-            ],
-            Commercial : [
-                'Office',
-                'Shop',
-                'Warehouse',
-                'Factory',
-                'Building',
-                'Other'
-            ]
-        };
-        $.map(types[type], function(type, index) {
-            let $type = `<option value="${type}">${type}</option>`;
-            $($subType).append($type);
-        });
-    };
-
-    function clearSubTypes(){
-        $($subType).empty().append('<option value="">Select Sub Type</option>');
-    }
-
-    function hideSubTypes(){
-        $($subTypes).hide();
-    }
-
-
-    function showSubTypes(){
-        $($subTypes).show();
-    }
-
-
-    function placeMarker(location){
-        if (marker == null) {
-            marker = new google.maps.Marker({
-                position: location,
-                map: map,
-                zoom: 14
-            });
-        } else {
-            marker.setPosition(location);
-            marker.setMap(map);
-        }
-        map.setCenter(marker.getPosition());
-    };
-
-
-    function initListingsMap(lat,lng){
-        let mapOptions = {
-            zoom: 14,
-            center: new google.maps.LatLng(lat,lng)
-        };
-
-        geocoder = new google.maps.Geocoder();
-        map = new google.maps.Map(document.getElementById('listing-form-map'), mapOptions);
-
-        google.maps.event.addListener(map, 'click', function(event) {
-            setListingCoords(event.latLng.lat, event.latLng.lng);
-            placeMarker(event.latLng);
-        });
-
-        toggleListingMap('show');
-    }
-
-    function setListingCoords(lat,lng){
-        $('#lat').val(lat);
-        $('#lng').val(lng);
-    }
-
-    function removeListingCoords(){
-        $('#lat').val('');
-        $('#lng').val('');
     }
 
     function renderListingErrors(errors){
@@ -554,67 +729,13 @@ APP.SUBMIT_LISTING = () => {
         }, 500);
     };
 
-
-    function clearListingErrors(){
-        $('.listing-errors > .errors').empty();
+    function setListingCoords(lat,lng){
+        $('#lat').val(lat);
+        $('#lng').val(lng);
     }
 
-    function getKeySafeName(str) {
-        return str// insert a space before all caps
-            .replace(/([A-Z])/g, ' $1')
-            // uppercase the first character
-            .replace(/^./, function(str){ return str.toUpperCase(); })
-    }
-
-
-    function renderLocationList(locations){
-        clearLocations();
-        $.map(locations, function(town, index) {
-            let $loc = `<option value="${town.id}" data-name="${town.name}">${town.name}</option>`;
-            $($location).append($loc);
-        });
-        $(".selectpicker").selectpicker('refresh');
-    }
-
-    function clearLocations(){
-        $($location).empty().append('<option value="">Select from list</option>');
-    };
-
-    function hideLocations(){
-        $('.available-towns').hide();
-    }
-
-    function showLocations(){
-        $('.available-towns').show();
-    };
-
-    function toggleListingMap(action){
-        switch(action){
-            case 'hide':
-                $('.location-map').hide();
-                break;
-            case 'show':
-                $('.location-map').show();
-                break;
-        }
-    }
-
-    function clearMarkers(marker){
-        marker.setMap(null);
-    }
-
-    if(action === 'edit'){
-        if(!map){
-            initListingsMap(coords.lat, coords.lng);
-            placeMarker({
-                lat : coords.lat,
-                lng : coords.lng
-            });
-        }else{
-            placeMarker({
-                lat : coords.lat,
-                lng : coords.lng
-            });
-        }
+    function removeListingCoords(){
+        $('#lat').val('');
+        $('#lng').val('');
     }
 };

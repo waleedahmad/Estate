@@ -11,6 +11,7 @@ class TierSeeder extends Seeder
      */
     public function run()
     {
+        \App\Tiers::truncate();
 
         $tiers = [
             [

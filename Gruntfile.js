@@ -6,11 +6,14 @@ module.exports = function(grunt) {
         concat: {
             dist: {
                 src: [
+                    'resources/assets/js/tabs.js',
                     'resources/assets/js/app.js',
                     'resources/assets/js/add_town_map.js',
                     'resources/assets/js/add_listing.js',
                     'resources/assets/js/admin_listings.js',
                     'resources/assets/js/listings.js',
+                    'resources/assets/js/locations.js',
+                    'resources/assets/js/messages.js',
                     'resources/assets/js/search.js',
                     'resources/assets/js/tiers.js',
                     'resources/assets/js/users.js',

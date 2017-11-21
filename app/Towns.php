@@ -12,7 +12,7 @@ class Towns extends Model
         return $this->hasOne('App\Cities', 'id', 'city_id');
     }
 
-    public function coords(){
-        return $this->hasOne('App\Coords', 'town_id', 'id');
+    public function blocks(){
+        return $this->hasMany('App\Blocks','town_id', 'id');
     }
 }

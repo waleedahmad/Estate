@@ -18,8 +18,15 @@
                         <div class="sliderTextBox">
                             <p>{{substr($listing->description, 0, 100)}}... </p>
                             <a class="buttonGrey large" href="/property/{{$listing->id}}"><span class="icon-button-arrow"></span><span class="buttonText">VIEW DETAILS</span></a>
-                            <span class="or">OR</span>
-                            <a class="buttonColor" href="#"><span class="icon-button-user"></span><span class="buttonText">CONTACT AGENT</span></a>
+                            @if(Auth::checK())
+                                @if($listing->user_id != Auth::user()->id)
+                                    <span class="or">OR</span>
+                                    <a class="buttonColor" href="/message/to/{{$listing->user->id}}">
+                                        <span class="icon-button-user"></span>
+                                        <span class="buttonText">CONTACT AGENT</span>
+                                    </a>
+                                @endif
+                            @endif
                         </div>
                     </div>
                     <div class="col-lg-3 col-lg-offset-3"><h1 class="sliderPrice">{{$listing->price}}</h1></div>
@@ -73,7 +80,7 @@
                                     <div class="priceInput"><input type="text" name="price max" id="price-max" class="priceInput" /></div>
                                 </div><br/>
                                 <div class="priceSlider"></div>
-                                <div class="priceSliderLabel"><span>0</span><span style="float:right;">800,000</span></div>
+                                <div class="priceSliderLabel"><span>0</span><span style="float:right;">{{\App\Listings::all()->max('price')}}</span></div>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6">
@@ -152,7 +159,7 @@
                                     </div>
                                 </a>
                                 <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                                <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                                 <div class="divider thin"></div>
                                 <p class="forSale">For {{$listing->purpose}}</p>
                                 <p class="price">PKR {{$listing->price}}</p>
@@ -298,41 +305,18 @@
     <script>
 
         if($('.priceSlider').length){
-            //Setup price slider
-            var Link = $.noUiSlider.Link;
+            var slider = document.getElementsByClassName('priceSlider')[0];
 
-            $(".priceSlider").noUiSlider({
+            noUiSlider.create(slider, {
                 range: {
-                    'min': {{\App\Listings::all()->min('price')}},
+                    'min': 0,
                     'max': {{\App\Listings::all()->max('price')}}
                 }
-                ,start: [{{\App\Listings::all()->min('price')}}, {{\App\Listings::all()->max('price')}}]
-                ,step: 1000
-                ,margin: 100000
+                ,start: [0, {{\App\Listings::all()->max('price')}}]
                 ,connect: true
                 ,direction: 'ltr'
                 ,orientation: 'horizontal'
                 ,behaviour: 'tap-drag'
-                ,serialization: {
-                    lower: [
-                        new Link({
-                            target: $("#price-min")
-                        })
-                    ],
-
-                    upper: [
-                        new Link({
-                            target: $("#price-max")
-                        })
-                    ],
-
-                    format: {
-                        // Set formatting
-                        decimals: 0,
-                        thousand: ',',
-                        prefix: 'PKR'
-                    }
-                }
             });
         }
 

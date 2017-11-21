@@ -1,11 +1,13 @@
-APP.ADD_TOWN = () => {
+APP.ADD_BLOCK = () => {
     let geocoder,
         map,
         marker;
 
-    let $add_town_form = $('.add-town').find('form'),
+    let $add_town_form = $('.add-block').find('form'),
+        $block = $('#block'),
         $lat = $('#loc-lat'),
-        $lng = $('#loc-lng');
+        $lng = $('#loc-lng'),
+        $coords = $('#long-lat');
 
 
     let getLat = () => {
@@ -22,6 +24,26 @@ APP.ADD_TOWN = () => {
 
     let setLng  = (lng) => {
         return $($lng).val(lng);
+    };
+
+    let getCityName = () => {
+        return $($block).attr('data-city-name');
+    };
+
+    let getTownName = () => {
+        return $($block).attr('data-town-name');
+    };
+
+    let getBlockName = () => {
+        return $($block).val();
+    };
+
+    let displayCoords = (lat, lng) => {
+        $($coords).html('<b>Lat :</b> ' + lat + ', <b>Lng :</b> ' +  lng);
+    };
+
+    let hideCoords  = () => {
+        $($coords).empty();
     };
 
     $($add_town_form).on('submit', function(e){
@@ -41,15 +63,29 @@ APP.ADD_TOWN = () => {
         } else {
             marker.setPosition(location);
         }
+        marker.setMap(map);
+    };
+
+    let clearMarker = () => {
+        marker.setMap(null);
+        clearCoords();
+    };
+
+    let clearCoords = () => {
+        setLat('');
+        setLng('');
+        hideCoords();
     };
 
     let codeAddress = (address) => {
+        console.log(address);
         geocoder.geocode( { 'address': address}, function(results, status) {
             if (status == 'OK') {
                 map.setCenter(results[0].geometry.location);
                 map.setZoom(15);
                 placeMarker(results[0].geometry.location);
             } else {
+                clearMarker();
                 toastr.error(status, 'Geocode was not successful for the following reason');
             }
         });
@@ -64,23 +100,26 @@ APP.ADD_TOWN = () => {
         geocoder = new google.maps.Geocoder();
         map = new google.maps.Map(document.getElementById('town-form-map'), mapOptions);
 
-        google.maps.event.addListener(map, 'click', function(event) {
-            placeMarker(event.latLng);
-        });
     };
 
     $("#geocode-address").on('click', function(e){
-        var $town = $("#town"),
-            town = $($town).val(),
-            city = $($town).attr('data-city-name'),
-            address = town + ' ' + city;
+        let block = getBlockName(),
+            town = getTownName(),
+            city = getCityName(),
+            address = block + ' ' + town + ' ' + city;
 
-        codeAddress(address);
+
+        if(block.length){
+            codeAddress(address);
+        }else{
+            toastr.error('Please provide a valid block name', 'Error')
+        }
+
     });
 
     let setCords = (location) => {
-        $("#long-lat").html('<b>Lat :</b> ' + location.lat() + ', <b>Lng :</b> ' +  location.lng());
-        $("#town").attr('data-lat', location.lat()).attr('data-lng', location.lng());
+        displayCoords(location.lat(), location.lng());
+        $($block).attr('data-lat', location.lat()).attr('data-lng', location.lng());
         setLat(location.lat());
         setLng(location.lng());
     };

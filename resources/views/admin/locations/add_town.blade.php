@@ -14,7 +14,7 @@
                     Add Town for {{$city->name}}
                 </h3>
 
-                <a href="/admin/locations/{{$city->id}}">
+                <a href="/admin/cities/{{$city->id}}">
                     <button class="buttonGrey">Back</button>
                 </a>
             </div>
@@ -24,7 +24,7 @@
 
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 add-town">
             <div class="col-lg-6">
-                <form method="post" action="/admin/locations/city/add" enctype="multipart/form-data">
+                <form method="post" action="/admin/cities/town" enctype="multipart/form-data">
                     <div class="row">
 
                         <div class="formBlock">
@@ -37,21 +37,7 @@
                             @endif
                         </div>
 
-                        <div id="long-lat">
-
-                        </div>
-
-                        <div class="formBlock">
-                            <input class="buttonGrey" type="button" value="Find Coordinates" id="geocode-address">
-                        </div>
-
-                        <div class="formBlock">
-                            <div id="town-form-map" style="width: 100%; height: 480px;"></div>
-                        </div>
-
                         <input type="hidden" name="city_id" value={{$city->id}}>
-                        <input type="hidden" name="lat" value="" id="loc-lat">
-                        <input type="hidden" name="lng" value="" id="loc-lng">
 
 
                         <div class="formBlock">
@@ -72,14 +58,4 @@
 
         </div>
     </div>
-@endSection
-
-@section('scripts')
-    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAqb3fT3SbMSDMggMEK7fJOIkvamccLrjA"></script><!-- google maps -->
-@endSection
-
-@section('post_scripts')
-    <script>
-        APP.ADD_TOWN();
-    </script>
 @endSection

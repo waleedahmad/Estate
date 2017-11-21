@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    {{$listing->title}}, {{$listing->town->name}}, {{$listing->town->city->name}} -
+    {{$listing->title}}, {{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}} -
 @endSection
 
 @section('content')
@@ -50,7 +50,7 @@
                                     <li>Property Type <span>{{$listing->type}}</span></li>
                                     <li>Property Sub Type <span>{{$listing->sub_type}}</span></li>
                                     <li>Contract Type <span>For {{$listing->purpose}}</span></li>
-                                    <li>Location <span>{{$listing->town->name}}, {{$listing->town->city->name}}</span></li>
+                                    <li>Location <span>{{$listing->block->town->name}}, {{$listing->block->town->city->name}}</span></li>
                                     <li>Size <span>{{$listing->land_area}} {{$listing->area_units}}</span></li>
                                 </ul>
                             </div>
@@ -60,7 +60,7 @@
                             <p class="price" style="float:right;">PKR {{$listing->price}}</p>
                             <p class="forSale" style="float:right; margin-right:20px;">For {{$listing->purpose}}</p>
                             <h1>{{$listing->title}}</h1>
-                            <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                            <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                             <p>
                                 {{$listing->description}}
                             </p>
@@ -82,7 +82,7 @@
                                             </div>
                                         </a>
                                         <h4><a href="/property/{{$listed->id}}">{{$listed->title}}</a></h4>
-                                        <p>{{$listed->town->name}}, {{$listed->town->city->name}}</p>
+                                        <p>{{$listed->block->town->name}}, {{$listed->block->town->city->name}}</p>
                                         <div class="divider thin"></div>
                                         <p class="forSale">FOR {{$listed->purpose}}</p>
                                         <p class="price">$687,000</p>
@@ -147,8 +147,8 @@
             var mapOptions = {
                 zoom: 13,
                 center: new google.maps.LatLng(
-                    '{{$listing->location ? $listing->location->lat : $listing->town->coords->lat}}',
-                    '{{$listing->location ? $listing->location->lng : $listing->town->coords->lng}}'
+                    '{{$listing->location ? $listing->location->lat : $listing->block->coords->lat}}',
+                    '{{$listing->location ? $listing->location->lng : $listing->block->coords->lng}}'
                 )
             };
 

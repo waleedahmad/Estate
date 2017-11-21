@@ -40,7 +40,7 @@
                                         </a>
                                     </div>
                                     <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                    <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                                    <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                                     <div class="divider thin"></div>
                                     <p class="forSale">For {{$listing->purpose}}</p>
                                     <p class="price">PKR {{$listing->price}}</p>

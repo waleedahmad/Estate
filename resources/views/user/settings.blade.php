@@ -12,7 +12,7 @@
             <!-- start main content -->
             <section class="settings">
                 <div class="row">
-                    <div class="col-lg-6 " >
+                    <div class="col-lg-6" >
                         <h3 id="mail-settings">Account Settings</h3>
                         <div class="divider"></div>
                         <!-- start login form -->
@@ -50,6 +50,103 @@
                             @endif
                         </div><!-- end mail form -->
                     </div><!-- end col -->
+
+                    @if(Auth::user()->Agent)
+                        <div class="col-lg-6 " >
+                            <h3 id="mail-settings">Agent Setings</h3>
+                            <div class="divider"></div>
+                            <!-- start login form -->
+                            <div class="filterContent sidebarWidget">
+                                <form method="post" action="/settings/agent">
+                                    <div class="row">
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <label for="login">Description</label><br/>
+                                                <input type="text" name="description" value="{{Auth::user()->Agent->description}}" />
+
+                                                @if($errors->has('description'))
+                                                    <div class="err">
+                                                        * {{$errors->first('description')}}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <label for="login">Office Number</label><br/>
+                                                <input type="text" name="office_no" value="{{Auth::user()->Agent->office_phone}}" />
+
+                                                @if($errors->has('office_no'))
+                                                    <div class="err">
+                                                        * {{$errors->first('office_no')}}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <label for="login">Facebook</label><br/>
+                                                <input type="text" name="facebook" value="{{Auth::user()->Agent->facebook}}" />
+
+                                                @if($errors->has('facebook'))
+                                                    <div class="err">
+                                                        * {{$errors->first('facebook')}}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <label for="login">Twitter</label><br/>
+                                                <input type="text" name="twitter" value="{{Auth::user()->Agent->twitter}}" />
+
+                                                @if($errors->has('twitter'))
+                                                    <div class="err">
+                                                        * {{$errors->first('twitter')}}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <label for="login">Google+</label><br/>
+                                                <input type="text" name="google_plus" value="{{Auth::user()->Agent->google_plus}}" />
+
+                                                @if($errors->has('google_plus'))
+                                                    <div class="err">
+                                                        * {{$errors->first('google_plus')}}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+
+
+                                        <div class="col-lg-12 col-md-12 col-sm-6">
+                                            <div class="formBlock">
+                                                <input class="buttonColor" type="submit" value="UPDATE ACCOUNT" style="margin-top:24px;">
+                                            </div>
+                                        </div>
+                                        <div style="clear:both;"></div>
+                                    </div><!-- end row -->
+                                    {{csrf_field()}}
+                                </form><!-- end form -->
+
+                                @if(Session::has('email_update'))
+                                    <div class="alertBox success text-center">
+                                        <h4>{{Session::get('email_update')}}</h4>
+                                    </div>
+                                @endif
+                            </div><!-- end mail form -->
+                        </div><!-- end col -->
+                    @endif
 
 
                     <div class="col-lg-6 " id="profile-settings">

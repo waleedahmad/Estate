@@ -38,4 +38,8 @@ class User extends Authenticatable
     public function FavListing($id){
         return FavoriteListings::where('listing_id', '=', $id)->where('user_id', '=' ,$this->id)->count();
     }
+
+    public function listings(){
+        return $this->hasMany('App\Listings', 'user_id', 'id');
+    }
 }

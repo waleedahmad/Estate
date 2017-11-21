@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title') {{\App\Config::where('name', '=', 'app_name')->first()->value}} Estate </title>
     <!-- CSS file links -->
-    <link href="/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link href="/css/jquery.bxslider.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" href="/lib/toastr/toastr.min.css">
 
@@ -25,18 +25,18 @@
 @yield('content')
 
 @if(!Request::is('admin/*') &&
+    !Request::is('message/*') &&
     !Request::is('user/*'))
     @include('partials.contact_us')
     @include('partials.footer')
 @endif
 
 <!-- JavaScript file links -->
-<script src="/js/jquery.js"></script>			<!-- Jquery -->
-<script src="/js/bootstrap.min.js"></script>  <!-- bootstrap 3.0 -->
-<script src="/js/respond.js"></script>
+<script src="/lib/jquery/dist/jquery.min.js"></script>			<!-- Jquery -->
+<script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>  <!-- bootstrap 3.0 -->
+<script src="/lib/respond/src/respond.js"></script>
 <script src="/js/jquery.bxslider.min.js"></script>           <!-- bxslider -->
-<script src="/js/tabs.js"></script>       <!-- tabs -->
-<script src="/js/jquery.nouislider.min.js"></script>  <!-- price slider -->
+<script src="/lib/nouislider/distribute/nouislider.min.js"></script>  <!-- price slider -->
 <script src="/lib/toastr/toastr.min.js"></script>
 @yield('scripts')
 <script src="/assets/js/app.js"></script>

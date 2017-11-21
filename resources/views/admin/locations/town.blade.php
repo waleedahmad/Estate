@@ -13,11 +13,15 @@
                 <h3>
                     {{$town->name}}, {{$town->city->name}}
                 </h3>
-                <a href="/admin/locations/{{$town->city->id}}">
+
+                <a href="/admin/cities/town/{{$town->id}}/block/add">
+                    <button style="margin-left: 10px;"  class="buttonGrey">Add Block</button>
+                </a>
+
+                <a href="/admin/cities/{{$town->city->id}}">
                     <button class="buttonGrey">Back</button>
                 </a>
             </div>
-
 
         </div>
 
@@ -25,6 +29,23 @@
             <div class="col-lg-6">
                 <div id="town-form-map" style="width: 100%; height: 480px;"></div>
             </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 cities" style="margin-top: 20px;">
+            @foreach($town->blocks as $block)
+                <div class="col-xs-12 col-sm-12 col-md-3 col-lg-3 block-block">
+                    <a href="/admin/cities/town/block/{{$block->id}}">
+                        <div class="city">
+                            {{$block->name}}
+
+                            <span class="glyphicon glyphicon-remove remove-block" data-id="{{$block->id}}" aria-hidden="true"></span>
+                            <a href="/admin/cities/town/block/{{$block->id}}/edit">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </a>
+                </div>
+            @endforeach
         </div>
     </div>
 @endSection
@@ -73,5 +94,7 @@
         codeAddress('{{$town->name}} {{$town->city->name}}')
     </script>
 
+    <script src="/lib/bootbox.js/bootbox.js"></script>
 @endSection
+
 

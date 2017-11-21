@@ -6,6 +6,7 @@
 @import "style";
 @import "responsive";
 @import "yamm";
+@import "messages";
 
 
 .auth, .admin{
@@ -49,10 +50,53 @@
       text-align:center;
       padding: 20px;
       margin-bottom: 20px;
+      a{
+        color:white;
+      }
+
+      span{
+        float:right;
+        margin-left: 10px;
+        display:none;
+        &:hover{
+          color: grey;
+        }
+      }
+
+      &:hover{
+        span{
+          display: inline-block;
+        }
+      }
     }
   }
 
-  .add-town{
+  .states{
+    .state{
+      display: block;
+      clear:both;
+      margin-bottom: 30px;
+
+      .cities{
+        div[class^='col']{
+          padding: 0px;
+          margin-right: 10px;
+        }
+        .city{
+          display: block;
+          width: 100%;
+          color: white;
+          font-size: 18px;
+          background-color:#4a4786;
+          text-align:center;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+      }
+    }
+  }
+
+  .add-block{
     #long-lat{
       text-align:center;
       font-size: 20px;

@@ -165,7 +165,7 @@
                                         <select name="city" id="city" class="formDropdown">
                                             <option value="">Select City</option>
                                             @foreach(\App\Cities::all() as $city)
-                                                <option value="{{$city->id}}" @if($listing->town->city->id === $city->id) selected @endif>{{$city->name}}</option>
+                                                <option value="{{$city->id}}" @if($listing->block->town->city->id === $city->id) selected @endif>{{$city->name}}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -173,12 +173,24 @@
 
                                 <div class="col-lg-12 col-md-12 col-sm-6 available-towns" style="display: block;">
                                     <div class="formBlock">
-                                        <label for="location">Location</label><br/>
-                                        <select name="location" id="location" class="selectpicker formDropdown" data-live-search="true">
+                                        <label for="town">Town</label><br/>
+                                        <select name="town" id="town" class="selectpicker formDropdown" data-live-search="true" data-width="100%">
                                             <option value="">Select from list</option>
-                                            @foreach($listing->town->city->towns as $town)
-                                                <option value="{{$town->id}}" @if($listing->town_id === $town->id) selected @endif>{{$town->name}}</option>
+                                            @foreach($listing->block->town->city->towns as $town)
+                                                <option value="{{$town->id}}" @if($listing->block->town->id === $town->id) selected @endif>{{$town->name}}</option>
                                             @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12 col-sm-6 available-blocks" style="display: block;">
+                                    <div class="formBlock">
+                                        <label for="blocks">Blocks</label><br/>
+                                        <select name="blocks" id="block" class="formDropdown selectpicker" data-live-search="true" data-width="100%">
+                                            @foreach($listing->block->town->blocks as $block)
+                                                <option value="{{$block->id}}" @if($listing->block->id === $block->id) selected @endif>{{$block->name}}</option>
+                                            @endforeach
+                                            <option value="">Select from list</option>
                                         </select>
                                     </div>
                                 </div>
@@ -211,9 +223,6 @@
                     </div>
                 {{csrf_field()}}
                 <!-- end amenities -->
-                    {{--
-                                        <button id="submit-all">Submit all files</button>
-                    --}}
 
                     <div class="col-lg-4 col-lg-offset-4 col-md-4">
                         <div class="formBlock">
@@ -224,8 +233,8 @@
                                     type="submit"
                                     value="UPDATE PROPERTY"
                                     data-listing-id="{{$listing->id}}"
-                                    data-lat="{{$listing->location ? $listing->location->lat : $listing->town->coords->lat}}"
-                                    data-lng="{{$listing->location ? $listing->location->lng : $listing->town->coords->lng}}"
+                                    data-lat="{{$listing->location ? $listing->location->lat : $listing->block->coords->lat}}"
+                                    data-lng="{{$listing->location ? $listing->location->lng : $listing->block->coords->lng}}"
                             >
                         </div>
                     </div>

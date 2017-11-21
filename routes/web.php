@@ -2,17 +2,6 @@
 
 Auth::routes();
 
-/*
- * GET /login
-POST /login
-GET /register
-POST /register
-GET /password/reset/{token}
-GET /password/reset
-POST /password/reset
-*/
-
-
 Route::get('/logout', 'Auth\LoginController@logout');
 
 Route::get('/', 'HomeController@getIndex');
@@ -23,6 +12,7 @@ Route::get('/listings/{type}', 'ListingController@getCategorizedListings');
 Route::get('/listings/sub/{type}', 'ListingController@getSubTypListings');
 
 Route::get('/agents', 'AgentController@viewAgents');
+Route::get('/agent/{id}', 'AgentController@getAgent');
 
 Route::get('/contact', 'ContactController@getContactForm');
 
@@ -40,13 +30,16 @@ Route::group(['middleware'  =>  ['auth']], function(){
     Route::get('/user/submit_property', 'PropertyController@propertyForm');
     Route::post('/user/submit_property', 'PropertyController@submitProperty');
     Route::post('/user/listing/validate', 'PropertyController@validateListing');
-    Route::get('/city/locations', 'PropertyController@getCityLocations');
-    Route::get('/town/info', 'PropertyController@getTownInfo');
+    Route::get('/city/towns', 'PropertyController@getCityTowns');
+    Route::get('/town/blocks', 'PropertyController@getTownBlocks');
+
+    Route::get('/block/info', 'PropertyController@getBlockInfo');
 
     Route::get('/user/settings', 'SettingsController@getSettings');
     Route::post('/settings/email', 'SettingsController@updateEmail');
     Route::post('/settings/profile', 'SettingsController@updateProfile');
     Route::post('/settings/password', 'SettingsController@updatePassword');
+    Route::post('/settings/agent', 'SettingsController@updateAgentInfo');
 
     Route::get('/upload', 'StorageController@getUpload');
     Route::post('/upload', 'StorageController@upload');
@@ -54,7 +47,16 @@ Route::group(['middleware'  =>  ['auth']], function(){
     Route::get('/image/{category}/{uri}', 'StorageController@getImage');
 
     Route::get('/user/dashboard/', 'UserController@getDashboard');
-    Route::get('/user/messages', 'UserController@getMessages');
+
+    Route::post('/user/message/new', 'ConversationController@newMessage');
+    Route::get('/user/messages', 'ConversationController@getMessages');
+    Route::get('/message/to/{user}', 'ConversationController@initConversation');
+    Route::post('/user/conversation/init', 'ConversationController@createNewThread');
+    Route::get('/user/conversation/{id}', 'ConversationController@getConversation');
+    Route::delete('/user/conversation/', 'ConversationController@deleteConversation');
+
+
+
 
 
     Route::get('/user/properties', 'PropertyController@getProperties');
@@ -126,15 +128,33 @@ Route::group(['middleware'  =>  ['auth', 'isAdmin']], function(){
 
     // Location routes
 
-    Route::get('/admin/locations', 'LocationController@getLocations');
-    Route::get('/admin/locations/{id}', 'LocationController@getLocation');
-    Route::get('/admin/locations/town/{id}', 'LocationController@getTown');
+    Route::get('/admin/cities/add', 'LocationController@addCities');
+    Route::post('/admin/cities', 'LocationController@saveCity');
+    Route::delete('/admin/cities', 'LocationController@deleteCity');
+    Route::get('/admin/cities/edit/{id}','LocationController@editCity');
+    Route::post('/admin/cities/update', 'LocationController@updateCity');
 
-    Route::get('/admin/locations/cities/add', 'LocationController@addCities');
-    Route::post('/admin/locations/cities/add', 'LocationController@saveCity');
+    Route::get('/admin/cities', 'LocationController@getCities');
+    Route::get('/admin/cities/{id}', 'LocationController@getCity');
 
-    Route::get('/admin/locations/city/{id}/add', 'LocationController@addTown');
-    Route::post('/admin/locations/city/add', 'LocationController@saveTown');
+
+    Route::get('/admin/city/{id}/town/add', 'LocationController@addTown');
+    Route::post('/admin/cities/town', 'LocationController@saveTown');
+    Route::delete('/admin/cities/town','LocationController@deleteTown');
+    Route::post('/admin/cities/towns/update','LocationController@updateTown');
+
+    Route::get('/admin/cities/town/{id}', 'LocationController@getTown');
+    Route::get('/admin/cities/town/{id}/edit', 'LocationController@editTown');
+
+    Route::get('/admin/cities/town/{id}/block/add', 'LocationController@addBlock');
+    Route::post('/admin/cities/town/block', 'LocationController@saveBlock');
+    Route::get('/admin/cities/town/block/{id}', 'LocationController@showBlock');
+
+    Route::delete('/admin/cities/town/block', 'LocationController@deleteBlock');
+
+    Route::get('/admin/cities/town/block/{id}/edit', 'LocationController@editBlock');
+    Route::post('/admin/cities/town/block/update', 'LocationController@updateBlock');
+
 
 });
 
