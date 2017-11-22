@@ -10,9 +10,9 @@
                     <div class="filterHeader">
                         <ul class="filterNav tabs">
                             <li><a class="triangle" href="#tab1" data-purpose="ALL">ALL</a><span class="arrow-down"></span></li>
-                            <li><a href="#tab1"  data-purpose="SALE">SALE</a></li>
-                            <li><a href="#tab1"  data-purpose="RENT">RENT</a>
-                            <li><a href="#tab1"  data-purpose="LEASE">LEASE</a></li>
+                            <li><a href="#tab1"  data-purpose="Sale">SALE</a></li>
+                            <li><a href="#tab1"  data-purpose="Rent">RENT</a>
+                            <li><a href="#tab1"  data-purpose="Lease">LEASE</a></li>
 
                         </ul>
                     </div>
@@ -23,7 +23,7 @@
                                     <div class="formBlock">
                                         <label for="propertyType">Property Type</label><br/>
                                         <select name="propertyType" id="search-type" class="formDropdown">
-                                            <option value="ANY">Any</option>
+                                            <option value="Any">Any</option>
                                             <option value="Home">Home</option>
                                             <option value="Plots">Plots</option>
                                             <option value="Commercial">Commercial</option>
@@ -34,7 +34,7 @@
                                     <div class="formBlock">
                                         <label for="location">Sub Type</label><br/>
                                         <select name="subType" id="search-sub-type" class="formDropdown">
-                                            <option value="">Any</option>
+                                            <option value="Any">Any</option>
                                         </select>
                                     </div>
                                 </div>
@@ -47,31 +47,50 @@
                                             <div class="priceInput"><input type="text" name="priceMax" id="price-max" class="priceInput" /></div>
                                         </div><br/>
                                         <div class="priceSlider"></div>
-                                        <div class="priceSliderLabel"><span>0</span><span style="float:right;">800,000</span></div>
+                                        <div class="priceSliderLabel"><span>0</span><span style="float:right;">{{\App\Listings::all()->max('price')}}</span></div>
                                     </div>
                                 </div>
 
-                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="formBlock">
-                                        <label for="city">Cities</label><br/>
-                                        <select name="city" id="city" class="formDropdown">
-                                            <option value="">Any</option>
-                                            @foreach(\App\Cities::all() as $city)
-                                                <option value="{{$city->id}}">{{$city->name}}</option>
+                                        <label for="state">State</label><br/>
+                                        <select name="state" id="state" class="formDropdown">
+                                            <option value="Any">Any</option>
+                                            @foreach(\App\State::all() as $state)
+                                                <option value="{{$state->id}}">{{$state->name}}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
 
-                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="col-lg-6 col-md-6 col-sm-12">
                                     <div class="formBlock">
-                                        <label for="town">Town</label><br/>
-                                        <select name="town" id="town" class="formDropdown">
-                                            <option value="">Any</option>
+                                        <label for="city">City</label><br/>
+                                        <select name="city" id="city" class="formDropdown">
+                                            <option value="Any">Any</option>
                                         </select>
                                     </div>
                                 </div>
 
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="formBlock">
+                                        <label for="town">Town</label><br/>
+                                        <select name="town" id="town" class="formDropdown">
+                                            <option value="Any">Any</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="formBlock">
+                                        <label for="block">Block</label><br/>
+                                        <select name="block" id="block" class="formDropdown">
+                                            <option value="Any">Any</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="view" value="main">
+                                <input type="hidden" name="purpose" id="purpose" value="ALL">
                                 <div class="col-lg-12 col-md-12 col-sm-12">
                                     <div class="formBlock">
                                         <input class="buttonColor" type="submit" value="FIND PROPERTIES" style="margin-top:24px;">
@@ -112,7 +131,7 @@
                                     </div>
                                 </a>
                                 <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                <p>{{$listing->town->name}}, {{$listing->town->city->name}}</p>
+                                <p>{{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
                                 <div class="divider thin"></div>
                                 <p class="forSale">For {{$listing->purpose}}</p>
                                 <p class="price">PKR {{$listing->price}}</p>
@@ -169,7 +188,11 @@
                             <img class="agentImg" src="/storage/{{$agent->image_uri}}" alt="" /><br/><br/>
                         </div>
                         <h4>{{strtoupper($agent->name)}}</h4>
-                        <p>{{--{{$agent->Agent->description}}--}} Description goes here</p>
+                        @if($agent->Agent->description)
+                            <p>{{strlen($agent->Agent->description) > 30 ? substr($agent->Agent->description,0 ,27).'...' :  $agent->Agent->description }}</p>
+                        @else
+                            <p>N/A</p>
+                        @endif
                         <ul class="socialIcons">
                             <li><a href="#"><img src="images/icon-fb.png" alt="" /></a></li>
                             <li><a href="#"><img src="images/icon-twitter.png" alt="" /></a></li>
@@ -183,7 +206,7 @@
     </section>
     <!-- end top agents section -->
 
-    <!-- start widgets section -->
+    {{--<!-- start widgets section -->
     <section class="genericSection">
         <div class="container">
             <div class="row">
@@ -236,7 +259,7 @@
             </div><!-- end row -->
         </div><!-- end container -->
     </section>
-    <!-- end widgets section -->
+    <!-- end widgets section -->--}}
 @endSection
 
 
@@ -260,8 +283,8 @@
             @foreach($slider_listings as $listing)
                 var marker_{{$loop->index}} = new google.maps.Marker({
                     position: {
-                        lat : {{$listing->location ? $listing->location->lat : $listing->town->coords->lat}},
-                        lng : {{$listing->location ? $listing->location->lng : $listing->town->coords->lng}}
+                        lat : {{$listing->location ? $listing->location->lat : $listing->block->coords->lat}},
+                        lng : {{$listing->location ? $listing->location->lng : $listing->block->coords->lng}}
                     },
                     map: map,
                     zoom: 14,
@@ -281,45 +304,39 @@
         google.maps.event.addDomListener(window, 'load', initialize);
     </script>
     <script>
-        var Link = $.noUiSlider.Link;
-        let $slider = $('.priceSlider');
+        if($('.priceSlider').length){
+            let $min = $('#price-min'),
+                $max = $('#price-max');
 
-        $($slider).noUiSlider({
-            range: {
-                'min': {{\App\Listings::all()->min('price')}},
-                'max': {{\App\Listings::all()->max('price')}}
-            }
-            ,start: [{{\App\Listings::all()->min('price')}}, {{\App\Listings::all()->max('price')}}]
-            ,step: 1000
-            ,margin: 100000
-            ,connect: true
-            ,direction: 'ltr'
-            ,orientation: 'horizontal'
-            ,behaviour: 'tap-drag'
-            ,serialization: {
-                lower: [
-                    new Link({
-                        target: $("#price-min")
-                    })
-                ],
+            $($min).val(parseInt(100));
+            $($max).val({{\App\Listings::all()->max('price')}});
+            var slider = document.getElementsByClassName('priceSlider')[0];
 
-                upper: [
-                    new Link({
-                        target: $("#price-max")
-                    })
-                ],
-
-                format: {
-                    // Set formatting
-                    decimals: 0,
+            noUiSlider.create(slider, {
+                range: {
+                    'min': 0,
+                    'max': {{\App\Listings::all()->max('price')}}
                 }
-            }
-        });
+                ,start: [100, {{\App\Listings::all()->max('price')}}]
+                ,connect: true
+                ,step: 1000
+                ,direction: 'ltr'
+                ,orientation: 'horizontal'
+                ,behaviour: 'tap-drag'
+            });
 
-        $($slider).on('change', function(){
-            console.log($($slider).val());
-        });
+            slider.noUiSlider.on('change', function(values){
+                console.log(values);
+                $($min).val(parseInt(values[0]));
+                $($max).val(parseInt(values[1]));
+            });
+        }
 
+    </script>
+@endSection
 
+@section('post_scripts')
+    <script>
+        APP.SEARCH();
     </script>
 @endSection

@@ -7,7 +7,7 @@
                 <p>{{\App\Config::where('name', '=', 'footer_description')->first()->value}}</p>
             </div>
             <div class="col-lg-3">
-                <a style="float:right; margin-top:15px;" class="buttonColor" href="#">CONTACT US</a>
+                <a style="float:right; margin-top:15px;" class="buttonColor" href="/contact">CONTACT US</a>
             </div>
             <div style="clear:both;"></div>
         </div>

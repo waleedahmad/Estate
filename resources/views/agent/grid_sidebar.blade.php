@@ -33,7 +33,11 @@
                                             </div>
                                         </a>
                                         <h4><a href="/agent/{{$agent->id}}">{{$agent->name}}</a></h4>
-                                        <p>{{$agent->Agent->description ? $agent->Agent->description : 'No Description' }}</p>
+                                        @if($agent->Agent->description)
+                                            <p>{{strlen($agent->Agent->description) > 30 ? substr($agent->Agent->description,0 ,27).'...' :  $agent->Agent->description }}</p>
+                                        @else
+                                            <p>N/A</p>
+                                        @endif
                                     </div>
 
                                     <table border="1" class="agentDetails">

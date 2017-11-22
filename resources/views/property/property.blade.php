@@ -67,6 +67,18 @@
                         </div><!-- end col -->
                     </div><!-- end row -->
 
+                    @if($listing->link)
+                        <!-- start related properties -->
+                            <h4>YOUTUBE VIDEO</h4>
+                            <div class="divider thin"></div>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-6">
+                                    {!! $listing->link->embed_code !!}
+                                </div>
+
+                            </div><!-- end related properties row -->
+                    @endif
+
                     <!-- start related properties -->
                     <h4>RELATED PROPERTIES</h4>
                     <div class="divider thin"></div>
@@ -85,7 +97,7 @@
                                         <p>{{$listed->block->town->name}}, {{$listed->block->town->city->name}}</p>
                                         <div class="divider thin"></div>
                                         <p class="forSale">FOR {{$listed->purpose}}</p>
-                                        <p class="price">$687,000</p>
+                                        <p class="price">PKR {{$listed->price}}</p>
                                     </div>
                                     <table border="1" class="propertyDetails">
                                         <tr>
@@ -103,20 +115,54 @@
                 <div class="col-lg-3 col-md-3">
                     <!-- start quick search widget -->
                     @if(Auth::check() && $listing->user_id != Auth::id())
-                        <button
-                                class="buttonColor listing-fav-toggle"
-                                style="margin-bottom: 20px; width: 100%;"
-                                data-id="{{$listing->id}}"
 
-                                data-status="{{Auth::user()->FavListing($listing->id)}}"
-                        >
-                            @if(Auth::user()->FavListing($listing->id))
-                                Remove From Favorites
-                            @else
-                                Add to Favorites
-                            @endif
-                        </button>
+                        @if(Auth::user()->type != 'admin')
+                            <h3>Bookmark</h3>
+                            <div class="divider"></div>
+                            <button
+                                    class="buttonColor listing-fav-toggle"
+                                    style="margin-bottom: 20px; width: 100%;"
+                                    data-id="{{$listing->id}}"
+
+                                    data-status="{{Auth::user()->FavListing($listing->id)}}"
+                            >
+                                @if(Auth::user()->FavListing($listing->id))
+                                    Remove From Favorites
+                                @else
+                                    Add to Favorites
+                                @endif
+                            </button>
+
+                            <h3>Contact</h3>
+                            <div class="divider"></div>
+
+                            <a href="/message/to/{{$listing->user_id}}">
+                                <button
+                                        class="buttonColor listing-fav-toggle"
+                                        style="margin-bottom: 20px; width: 100%;"
+                                        data-id="{{$listing->id}}"
+
+                                        data-status="{{Auth::user()->FavListing($listing->id)}}"
+                                >
+                                    Chat with {{$listing->user->name}}
+                                </button>
+                            </a>
+
+
+                        @endif
                     @endif
+
+                    <button
+                            class="buttonColor"
+                            style="margin-bottom: 20px; width: 100%;"
+                    >
+                        @if($listing->user->phone)
+                            Phone : {{$listing->user->phone}}
+                        @else
+                            Phone : N/A
+                        @endif
+
+                    </button>
 
                     @include('partials.quick_search')
                     @include('partials.sidebar_property_types')

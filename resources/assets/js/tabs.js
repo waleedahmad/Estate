@@ -26,6 +26,7 @@ $('ul.tabs').each(function(){
         $active = $(this);
         $content = $($(this).attr('href'));
         console.log($(this).attr('data-purpose'));
+        $('#purpose').val($(this).attr('data-purpose'));
 
         // Make the tab active.
         $active.addClass('current');

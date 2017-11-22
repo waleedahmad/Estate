@@ -20,11 +20,13 @@
                             <a class="buttonGrey large" href="/property/{{$listing->id}}"><span class="icon-button-arrow"></span><span class="buttonText">VIEW DETAILS</span></a>
                             @if(Auth::checK())
                                 @if($listing->user_id != Auth::user()->id)
-                                    <span class="or">OR</span>
-                                    <a class="buttonColor" href="/message/to/{{$listing->user->id}}">
-                                        <span class="icon-button-user"></span>
-                                        <span class="buttonText">CONTACT AGENT</span>
-                                    </a>
+                                    @if(Auth::user()->type != 'admin')
+                                        <span class="or">OR</span>
+                                        <a class="buttonColor" href="/message/to/{{$listing->user->id}}">
+                                            <span class="icon-button-user"></span>
+                                            <span class="buttonText">CONTACT AGENT</span>
+                                        </a>
+                                    @endif
                                 @endif
                             @endif
                         </div>
@@ -41,21 +43,21 @@
             <div class="filterHeader">
                 <ul class="filterNav tabs">
                     <li><a class="current triangle" href="#tab1">ALL PROPERTIES</a></li>
-                    <li><a href="#tab2">FOR SALE</a></li>
-                    <li><a href="#tab3">FOR RENT</a></li>
-                    <li><a href="#tab4">FOR LEASE</a></li>
+                    <li><a href="#tab1" data-purpose="Sale">FOR SALE</a></li>
+                    <li><a href="#tab1" data-purpose="Rent">FOR RENT</a></li>
+                    <li><a href="#tab1" data-purpose="Lease">FOR LEASE</a></li>
 
                 </ul>
                 <div class="filterHeadButton"><a class="buttonGrey" href="/listings">VIEW ALL LISTINGS</a></div>
             </div>
             <div class="filterContent" id="tab1">
-                <form method="post" action="#">
+                <form method="GET" action="/search" class="prop-search">
                     <div class="row">
                         <div class="col-lg-4 col-md-4 col-sm-6">
                             <div class="formBlock">
                                 <label for="propertyType">Property Type</label><br/>
-                                <select name="propertytype" id="propertyType" class="formDropdown">
-                                    <option value="">Any</option>
+                                <select name="propertyType" id="search-type" class="formDropdown">
+                                    <option value="Any">Any</option>
                                     <option value="Home">Home</option>
                                     <option value="Plots">Plots</option>
                                     <option value="Commercial">Commercial</option>
@@ -64,9 +66,9 @@
                         </div>
                         <div class="col-lg-4 col-md-4 col-sm-6">
                             <div class="formBlock">
-                                <label for="subType">Sub Type</label><br/>
-                                <select name="subType" id="subType" class="formDropdown">
-                                    <option value="">Any</option>
+                                <label for="location">Sub Type</label><br/>
+                                <select name="subType" id="search-sub-type" class="formDropdown">
+                                    <option value="Any">Any</option>
                                 </select>
                             </div>
                         </div>
@@ -75,9 +77,9 @@
                             <div class="formBlock">
                                 <label for="price-min">Price Range</label><br/>
                                 <div style="float:right; margin-top:-25px;">
-                                    <div class="priceInput"><input type="text" name="price min" id="price-min" class="priceInput" /></div>
+                                    <div class="priceInput"><input type="text" name="priceMin" id="price-min" class="priceInput" /></div>
                                     <span style="float:left; margin-right:10px; margin-left:10px;">-</span>
-                                    <div class="priceInput"><input type="text" name="price max" id="price-max" class="priceInput" /></div>
+                                    <div class="priceInput"><input type="text" name="priceMax" id="price-max" class="priceInput" /></div>
                                 </div><br/>
                                 <div class="priceSlider"></div>
                                 <div class="priceSliderLabel"><span>0</span><span style="float:right;">{{\App\Listings::all()->max('price')}}</span></div>
@@ -85,43 +87,48 @@
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6">
                             <div class="formBlock">
-                                <label for="beds">City</label><br/>
-                                <select name="beds" id="beds" class="formDropdown">
-                                    <option value="">Any</option>
-                                    @foreach(\App\Cities::all() as $city)
-                                        <option value="{{$city->id}}">{{$city->name}}</option>
+                                <label for="state">State</label><br/>
+                                <select name="state" id="state" class="formDropdown">
+                                    <option value="Any">Any</option>
+                                    @foreach(\App\State::all() as $state)
+                                        <option value="{{$state->id}}">{{$state->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6">
                             <div class="formBlock">
-                                <label for="baths">Town</label><br/>
-                                <select name="baths" id="baths" class="formDropdown">
-                                    <option value="">Any</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
+                                <label for="city">City</label><br/>
+                                <select name="city" id="city" class="formDropdown">
+                                    <option value="Any">Any</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-3 col-sm-6">
                             <div class="formBlock">
-                                <label for="area">Area</label><br/>
-                                <select name="area" id="area" class="formDropdown">
-                                    <option value="">Any</option>
-                                    <option value="Square Feet">Square Feet</option>
-                                    <option value="Square Yards">Square Yards</option>
-                                    <option value="Square Meters">Square Meters</option>
-                                    <option value="Marla">Marla</option>
-                                    <option value="Kanal">Kanal</option>
+                                <label for="town">Town</label><br/>
+                                <select name="town" id="town" class="formDropdown">
+                                    <option value="Any">Any</option>
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-lg-3 col-md-3 col-sm-6">
                             <div class="formBlock">
-                                <input class="buttonColor" type="submit" value="FIND PROPERTIES" style="margin-top:24px;">
+                                <label for="block">Block</label><br/>
+                                <select name="block" id="block" class="formDropdown">
+                                    <option value="Any">Any</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <input type="hidden" name="view" value="main">
+                        <input type="hidden" name="purpose" id="purpose" value="ALL">
+
+                        <div class="col-lg-3 col-md-3 col-sm-6" style="float:right">
+                            <div class="formBlock">
+                                <input class="buttonColor" type="submit" value="FIND PROPERTIES" style="margin-top: 24px;">
                             </div>
                         </div>
                         <div style="clear:both;"></div>
@@ -215,7 +222,11 @@
                             <img class="agentImg" src="/storage/{{$agent->image_uri}}" alt="" /><br/><br/>
                         </div>
                         <h4>{{strtoupper($agent->name)}}</h4>
-                        <p>{{--{{$agent->Agent->description}}--}} Description goes here</p>
+                        @if($agent->Agent->description)
+                            <p>{{strlen($agent->Agent->description) > 30 ? substr($agent->Agent->description,0 ,27).'...' :  $agent->Agent->description }}</p>
+                        @else
+                            <p>N/A</p>
+                        @endif
                         <ul class="socialIcons">
                             <li><a href="#"><img src="images/icon-fb.png" alt="" /></a></li>
                             <li><a href="#"><img src="images/icon-twitter.png" alt="" /></a></li>
@@ -229,7 +240,7 @@
     </section>
     <!-- end top agents section -->
 
-    <!-- start widgets section -->
+    {{--<!-- start widgets section -->
     <section class="genericSection">
         <div class="container">
             <div class="row">
@@ -282,7 +293,7 @@
             </div><!-- end row -->
         </div><!-- end container -->
     </section>
-    <!-- end widgets section -->
+    <!-- end widgets section -->--}}
 
 
 @endSection
@@ -305,6 +316,11 @@
     <script>
 
         if($('.priceSlider').length){
+            let $min = $('#price-min'),
+                $max = $('#price-max');
+
+            $($min).val(parseInt(100));
+            $($max).val({{\App\Listings::all()->max('price')}});
             var slider = document.getElementsByClassName('priceSlider')[0];
 
             noUiSlider.create(slider, {
@@ -312,13 +328,25 @@
                     'min': 0,
                     'max': {{\App\Listings::all()->max('price')}}
                 }
-                ,start: [0, {{\App\Listings::all()->max('price')}}]
+                ,step: 1000
+                ,start: [100, {{\App\Listings::all()->max('price')}}]
                 ,connect: true
                 ,direction: 'ltr'
                 ,orientation: 'horizontal'
                 ,behaviour: 'tap-drag'
             });
-        }
 
+            slider.noUiSlider.on('change', function(values){
+                console.log(values);
+                $($min).val(parseInt(values[0]));
+                $($max).val(parseInt(values[1]));
+            });
+        }
+    </script>
+@endSection
+
+@section('post_scripts')
+    <script>
+        APP.SEARCH();
     </script>
 @endSection

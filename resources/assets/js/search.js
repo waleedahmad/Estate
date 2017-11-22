@@ -1,5 +1,4 @@
-
-if($('.prop-search').length){
+APP.SEARCH = () => {
     console.log('Searching');
     let propTypes = {
         Home : [
@@ -32,49 +31,114 @@ if($('.prop-search').length){
         renderSearchSubTypes(propTypes, this.value);
     });
 
-    $("#city").on('change', function(e){
-        if(this.value.length){
-            let city_id = $(this).val();
+    $("#state").on('change', function(e){
+        if(this.value !== 'Any'){
+            let state_id = $(this).val();
 
             $.ajax({
                 type : 'GET',
-                url : '/city/locations',
+                url : '/search/cities',
                 data : {
-                    id : city_id
+                    id : state_id
                 },
                 success : function(res){
                     if(res.length){
-                        renderTowns(res);
+                        renderDropDown('#city', res);
                     }else{
-                        clearTowns();
+                        clearDropDown('#city');
                     }
                 }
             });
+        }else{
+            clearDropDown('#city');
+            clearDropDown('#town');
+            clearDropDown('#block');
         }
     });
-}
 
-function renderSearchSubTypes(props, type){
-    clearSearchSubTypes();
-    if(type.length){
-        $.map(props[type], function(type, index) {
-            let $type = `<option value="${type}">${type}</option>`;
-            $('#search-sub-type').append($type);
+    $("#city").on('change', function(e){
+        if(this.value !== 'Any'){
+            let block_id = $(this).val();
+
+            $.ajax({
+                type : 'GET',
+                url : '/search/towns',
+                data : {
+                    id : block_id
+                },
+                success : function(res){
+                    if(res.length){
+                        renderDropDown('#town', res);
+                    }else{
+                        clearDropDown('#town');
+                        clearDropDown('#block');
+                    }
+                }
+            });
+        }else{
+            clearDropDown('#town');
+            clearDropDown('#block');
+        }
+    });
+
+    $("#town").on('change', function(e){
+        if(this.value !== 'Any'){
+            let  town_id = $(this).val();
+
+            $.ajax({
+                type : 'GET',
+                url : '/search/blocks',
+                data : {
+                    id : town_id
+                },
+                success : function(res){
+                    if(res.length){
+                        renderDropDown('#block', res);
+                    }else{
+                        clearDropDown('#block');
+                    }
+                }
+            });
+        }else{
+            clearDropDown('#block');
+        }
+    });
+    function renderSearchSubTypes(props, type){
+        clearDropDown('#search-sub-type');
+        if(type.length){
+            $.map(props[type], function(type, index) {
+                let $type = `<option value="${type}">${type}</option>`;
+                $('#search-sub-type').append($type);
+            });
+        }
+    }
+
+    function renderDropDown($target, data){
+        console.log(data);
+        $($target).empty().append('<option value="Any">Any</option>');
+        $.map(data, function(data, index) {
+            let $option = `<option value="${data.id}">${data.name}</option>`;
+            $($target).append($option);
         });
     }
-}
-function renderTowns(towns) {
-    clearTowns();
-    $.map(towns, function(town, index) {
-        let $town = `<option value="${town.id}">${town.name}</option>`;
-        $('#town').append($town);
+
+
+    function clearDropDown($target){
+        $($target).empty().append('<option value="Any">Any</option>');
+    }
+
+    $(document).ready(function(){
+        let $search_inputs = [
+            '#search-type',
+            '#search-sub-type',
+            '#state',
+            '#city',
+            '#town',
+            '#block',
+        ];
+
+        $.each($search_inputs, function(index, $target){
+            $($target).val('Any');
+        });
     });
-}
-
-function clearSearchSubTypes() {
-    $('#search-sub-type').empty().append('<option value="ANY">ANY</option>');
-}
-
-function clearTowns() {
-    $('#town').empty().append('<option value="ANY">ANY</option>');
-}
+};

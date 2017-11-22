@@ -107,6 +107,7 @@ class SettingsController extends Controller
     public function updateAgentInfo(Request $request){
         $agent = Auth::user()->Agent;
         $agent->office_phone = $request->office_no;
+        $agent->description = $request->description;
         $agent->facebook = $request->facebook;
         $agent->twitter = $request->twitter;
         $agent->google_plus = $request->google_plus;

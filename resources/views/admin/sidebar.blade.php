@@ -22,4 +22,5 @@
 
     <a @if(Request::is('admin/cities*')) class="active" @endif  href="/admin/cities">Locations</a>
 
+    <a @if(Request::path() === 'user/settings') class="active" @endif  href="/user/settings">Settings</a>
 </div>

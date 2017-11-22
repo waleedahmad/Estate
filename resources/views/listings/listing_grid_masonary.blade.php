@@ -40,8 +40,10 @@
                                         </a>
                                     </div>
                                     <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                    <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
-                                    <div class="divider thin"></div>
+                                    <p>{{strlen($listing->block->name) > 30 ? substr($listing->block->name, 0 , 30).'...': $listing->block->name}}<br>
+                                        {{$listing->block->town->name}},
+                                        {{$listing->block->town->city->name}}
+                                    </p>                                    <div class="divider thin"></div>
                                     <p class="forSale">For {{$listing->purpose}}</p>
                                     <p class="price">PKR {{$listing->price}}</p>
                                 </div>
@@ -64,10 +66,10 @@
                 @endif
             </div><!-- end row -->
 
-            @if($listings->count())
-                {{ $listings->links('pagination.custom') }}
-            @endif
         </div><!-- end container -->
+        @if($listings->count())
+            {{ $listings->appends(request()->query())->links('pagination.custom') }}
+        @endif
     </section>
     <!-- end recent properties -->
 @endSection

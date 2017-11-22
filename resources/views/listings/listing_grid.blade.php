@@ -38,11 +38,20 @@
                                     <a class="propertyType" href="#">{{$listing->sub_type}}</a>
                                     <a href="/property/{{$listing->id}}" class="propertyImgLink">
                                         <div class="listingGridImageHolder">
-                                            <img class="propertyImg" src="/storage/{{$listing->images->first()->image_uri}}" alt="" />
+                                            <img class="propertyImg"
+                                                 src="/storage/{{$listing->images->first()->image_uri}}"
+                                                 alt=""
+                                            />
                                         </div>
                                     </a>
-                                    <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                    <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
+                                    <h4><a href="/property/{{$listing->id}}">
+                                            {{strlen($listing->title) > 30 ? substr($listing->title, 0 , 27).'...' : $listing->title}}
+                                        </a>
+                                    </h4>
+                                    <p>{{strlen($listing->block->name) > 30 ? substr($listing->block->name, 0 , 30).'...': $listing->block->name}}<br>
+                                        {{$listing->block->town->name}},
+                                        {{$listing->block->town->city->name}}
+                                    </p>
                                     <div class="divider thin"></div>
                                     <p class="forSale">For {{$listing->purpose}}</p>
                                     <p class="price">PKR {{$listing->price}}</p>
@@ -68,7 +77,7 @@
                 @endif
             </div><!-- end row -->
             @if($listings->count())
-                {{ $listings->links('pagination.custom') }}
+                {{ $listings->appends(request()->query())->links('pagination.custom') }}
             @endif
 
         </div><!-- end container -->

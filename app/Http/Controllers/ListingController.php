@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Layout;
+use App\ListingLink;
 use App\Listings;
 use Illuminate\Http\Request;
 
@@ -122,6 +123,31 @@ class ListingController extends Controller
         if($listing->save()){
             return response()->json(true);
         }
+    }
 
+    public function getYoutubeEmbed(Request $request){
+        $listing = Listings::find($request->id);
+        return response()->json($listing->link ? $listing->link->embed_code : '');
+    }
+
+    public function saveYoutubeEmbed(Request $request){
+        $listing = Listings::find($request->id);
+
+        if($listing->link){
+            $link = $listing->link;
+            $link->embed_code = $request->code;
+            if($link->save()){
+                return response()->json(true);
+            }
+        }else{
+            $link = new ListingLink();
+            $link->listing_id = $request->id;
+            $link->embed_code = $request->code;
+            if($link->save()){
+                return response()->json(true);
+            }
+        }
+
+        return response()->json(false);
     }
 }

@@ -8,7 +8,7 @@
     <!-- start subheader -->
     <section class="subHeader page">
         <div class="container">
-            <h1>Contact Us</h1>
+            <h1>Contact</h1>
             <form class="searchForm" method="post" action="#">
                 <input type="text" name="search" value="Search our site" />
             </form>
@@ -39,26 +39,49 @@
                                 <li><img src="/images/icon-phone.png" alt="" />{{\App\Config::where('name', '=', 'phone')->first()->value}}</li>
                                 <li><img src="/images/icon-pin.png" alt="" />{{\App\Config::where('name', '=', 'address')->first()->value}}</li>
                             </ul>
-                            <form method="post" action="http://rypepixel.com/easy-living/contact.php" id="contact-us">
+                            <form method="post" action="/contact" id="contact-us">
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6 col-sm-6">
                                         <div class="formBlock">
                                             <label for="contactName">Your Name</label><br/>
-                                            <input type="text" name="contactName" id="contactName" class="requiredField" value="" />
+                                            <input type="text" name="contactName" id="contactName" class="requiredField" value=""/>
+                                            @if($errors->has('contactName'))
+                                                <div class="err">
+                                                    * {{$errors->first('contactName')}}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-lg-6 col-md-6 col-sm-6">
                                         <div class="formBlock">
                                             <label for="email">Your Email</label><br/>
-                                            <input type="text" name="email" id="email" class="requiredField email" value="" />
+                                            <input type="text" name="email" id="email" class="requiredField email" value=""/>
+                                            @if($errors->has('email'))
+                                                <div class="err">
+                                                    * {{$errors->first('email')}}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="col-lg-12">
                                         <div class="formBlock">
                                             <label for="message">Your Message</label><br/>
                                             <textarea name="comments" id="message" class="requiredField formDropdown"></textarea>
+                                            @if($errors->has('comments'))
+                                                <div class="err">
+                                                    * {{$errors->first('comments')}}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
+                                    <div class="col-lg-12">
+                                        @if(Session::has('message'))
+                                            <div class="alertBox success text-center">
+                                                <h4>{{Session::get('message')}}</h4>
+                                            </div>
+                                        @endif
+                                    </div>
+                                    {{csrf_field()}}
                                     <div class="col-lg-3 col-lg-offset-9 col-md-4 col-md-offset-8 col-sm-4 col-sm-offset-8">
                                         <div class="formBlock">
                                             <input class="buttonColor" type="submit" value="SEND" />

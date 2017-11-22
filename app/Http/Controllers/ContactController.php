@@ -15,4 +15,18 @@ class ContactController extends Controller
                 return view('contact.wide');
         }
     }
+
+    public function sendEmail(Request $request){
+        $validator = \Validator::make($request->all(), [
+            'contactName'   =>  'required',
+            'email' =>  'required|email',
+            'comments'  =>  'required'
+        ]);
+
+        if($validator->passes()){
+            return redirect('/contact')->with('message', 'Your message has been sent.');
+        }else{
+            return redirect('/contact')->withErrors($validator)->withInput();
+        }
+    }
 }

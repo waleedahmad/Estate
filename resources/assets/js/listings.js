@@ -90,6 +90,44 @@ $('.remove-fav-listing').on('click', function(e){
             }
         }.bind(this)
     });
-
-
 });
+
+$('.youtube-link').on('click', function(e){
+    let id = $(this).attr('data-id');
+    $.ajax({
+        type : 'GET',
+        url : '/admin/listings/youtube',
+        data : {
+            id : id
+        },
+        success : function(res){
+            bootbox.prompt({
+                title: "Youtube Embed code!",
+                inputType: 'textarea',
+                value : res,
+                callback: function (code) {
+                    if(code){
+                        createListingMedia(id, code);
+                    }
+                }
+            });
+        }
+    })
+});
+
+function createListingMedia(id, code){
+    $.ajax({
+        type : 'POST',
+        url : '/admin/listings/youtube',
+        data : {
+            id : id,
+            code : code,
+            _token : $('meta[name=_token]').attr('content'),
+        },
+        success : function(res){
+            if(res){
+                toastr.success('Youtube media link created');
+            }
+        }
+    })
+}

@@ -12,6 +12,8 @@
             <a style="float:right; margin-top:-7px;" href="/user/submit_property" class="buttonGrey">+ Submit New Property</a>
             @if(Request::is('user/properties'))
                 <h3>MY PROPERTIES</h3>
+            @elseif(Request::is('user/properties/favorites'))
+                <h3>FAVORITE PROPERTIES</h3>
             @else
                 <h3>PENDING PROPERTIES</h3>
             @endif

@@ -53,11 +53,24 @@
                             <div class="col-lg-4 col-md-4 col-sm-6">
                                 <div class="propertyItem">
                                     <div class="propertyContent">
-                                        <a class="propertyType" href="/listing/{{$listing->id}}">{{$listing->type}}</a>
-                                        <a href="/listing/{{$listing->id}}" class="propertyImgLink"><img class="propertyImg" src="/images/home3.jpg" alt="" /></a>
-                                        <h4><a href="/listing/{{$listing->id}}">{{$listing->title}}</a></h4>
-                                        <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
-                                        <div class="divider thin"></div>
+                                        <a class="propertyType" href="/property/{{$listing->id}}">{{$listing->type}}</a>
+                                        <a href="/property/{{$listing->id}}" class="propertyImgLink">
+
+                                            <div class="listingGridImageHolder">
+                                                <img class="propertyImg"
+                                                     src="/storage/{{$listing->images->first()->image_uri}}"
+                                                     alt=""
+                                                />
+                                            </div>
+                                        </a>
+                                        <h4><a href="/property/{{$listing->id}}">
+                                                {{strlen($listing->title) > 30 ? substr($listing->title, 0 , 27).'...' : $listing->title}}
+                                            </a>
+                                        </h4>
+                                        <p>{{strlen($listing->block->name) > 30 ? substr($listing->block->name, 0 , 30).'...': $listing->block->name}}<br>
+                                            {{$listing->block->town->name}},
+                                            {{$listing->block->town->city->name}}
+                                        </p>                                        <div class="divider thin"></div>
                                         <p class="forSale">FOR {{$listing->purpose}}</p>
                                         <p class="price">PKR{{$listing->price}}</p>
                                     </div>

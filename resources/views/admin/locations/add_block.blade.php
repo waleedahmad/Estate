@@ -28,7 +28,7 @@
                     <div class="row">
 
                         <div class="formBlock">
-                            <label for="town">Town Name</label><br/>
+                            <label for="town">Block Name</label><br/>
                             <input type="text" name="block" id="block" data-town-name="{{$town->name}}" data-city-name="{{$town->city->name}}"/>
                             @if($errors->has('block'))
                                 <div class="err">

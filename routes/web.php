@@ -7,6 +7,12 @@ Route::get('/logout', 'Auth\LoginController@logout');
 Route::get('/', 'HomeController@getIndex');
 Route::get('/search', 'SearchController@getResults');
 
+Route::get('/search/cities', 'SearchController@getCities');
+Route::get('/search/towns', 'SearchController@getTowns');
+Route::get('/search/blocks', 'SearchController@getBlocks');
+
+
+
 Route::get('/listings', 'ListingController@getListings');
 Route::get('/listings/{type}', 'ListingController@getCategorizedListings');
 Route::get('/listings/sub/{type}', 'ListingController@getSubTypListings');
@@ -15,6 +21,7 @@ Route::get('/agents', 'AgentController@viewAgents');
 Route::get('/agent/{id}', 'AgentController@getAgent');
 
 Route::get('/contact', 'ContactController@getContactForm');
+Route::post('/contact', 'ContactController@sendEmail');
 
 
 Route::get('/property/images', 'PropertyController@getPropertyImages');
@@ -86,6 +93,9 @@ Route::group(['middleware'  =>  ['auth', 'isAdmin']], function(){
     Route::post('/admin/listings/approve', 'ListingController@approveListing');
     Route::post('/admin/listings/delete', 'ListingController@deleteListing');
     Route::post('/admin/listings/disapprove', 'ListingController@disapproveListing');
+
+    Route::get('/admin/listings/youtube', 'ListingController@getYoutubeEmbed');
+    Route::post('/admin/listings/youtube', 'ListingController@saveYoutubeEmbed');
 
 
     // User routes

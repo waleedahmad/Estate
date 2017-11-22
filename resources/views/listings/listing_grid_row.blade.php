@@ -46,8 +46,10 @@
                                         <p class="price">PKR {{$listing->price}}</p>
                                         <p class="forSale">For {{$listing->purpose}}</p>
                                         <h4><a href="/property/{{$listing->id}}">{{$listing->title}}</a></h4><br/>
-                                        <p>{{$listing->block->name}}, {{$listing->block->town->name}}, {{$listing->block->town->city->name}}</p>
-                                        <p>{{$listing->description}}</p><br/>
+                                        <p>{{strlen($listing->block->name) > 30 ? substr($listing->block->name, 0 , 30).'...': $listing->block->name}}<br>
+                                            {{$listing->block->town->name}},
+                                            {{$listing->block->town->city->name}}
+                                        </p>                                        <p>{{$listing->description}}</p><br/>
                                         <table border="1" class="propertyDetails">
                                             <tr>
                                                 <td><img src="/images/icon-area.png" alt="" style="margin-right:7px;" />{{$listing->land_area}} {{$listing->area_units}}</td>
@@ -69,12 +71,10 @@
                         No listings found
                     </div>
                 @endif
-
-
-                @if($listings->count())
-                    {{ $listings->links('pagination.custom') }}
-                @endif
             </div>
+                @if($listings->count())
+                    {{ $listings->appends(request()->query())->links('pagination.custom') }}
+                @endif
         </div><!-- end container -->
     </section>
     <!-- end recent properties -->

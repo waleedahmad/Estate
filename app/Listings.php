@@ -32,4 +32,8 @@ class Listings extends Model
             Storage::disk('public')->delete($image->image_uri);
         }
     }
+
+    public function link(){
+        return $this->hasOne('App\ListingLink', 'listing_id', 'id');
+    }
 }

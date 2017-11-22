@@ -16,7 +16,6 @@
             </div>
         </div>
 
-
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 ">
 
 
@@ -92,6 +91,10 @@
 
                                                         <td class="disapprove-listing" data-id="{{$listing->id}}">
                                                             Disapprove
+                                                        </td>
+
+                                                        <td class="youtube-link" data-id="{{$listing->id}}">
+                                                            Youtube Embed
                                                         </td>
 
                                                         <td class="delete-listing" data-id="{{$listing->id}}">
