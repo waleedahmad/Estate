@@ -17,6 +17,7 @@ module.exports = function(grunt) {
                     'resources/assets/js/search.js',
                     'resources/assets/js/tiers.js',
                     'resources/assets/js/users.js',
+                    'resources/assets/js/admins.js'
                 ],
                 dest: 'public/assets/js/app.js',
             }

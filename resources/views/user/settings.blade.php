@@ -6,7 +6,11 @@
 
 @section('content')
     <div class="admin">
-        @include('user.sidebar')
+        @if(Auth::user()->type === 'admin')
+            @include('admin.sidebar')
+        @else
+            @include('user.sidebar')
+        @endif
 
         <div class="col-xs-12 col-sm-12 col-md-8 col-lg-10 user-admin">
             <!-- start main content -->

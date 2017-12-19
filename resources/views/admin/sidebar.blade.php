@@ -1,5 +1,8 @@
 <div class="admin-sidebar col-xs-12 col-sm-12 col-md-4 col-lg-2">
 
+    <a @if(Request::is('admin/admins*')) class="active" @endif  href="/admin/admins">Administrators</a>
+
+
     <a @if(Request::is('admin/listings/submissions') || Request::is('admin/listings/submissions/*')) class="active" @endif href="/admin/listings/submissions">Listing Submissions</a>
 
     <a @if(Request::is('admin/listings/approved') || Request::is('admin/listings/approved/*')) class="active" @endif href="/admin/listings/approved">Approved Listings</a>

@@ -79,6 +79,16 @@ Route::group(['middleware'  =>  ['auth', 'isAdmin']], function(){
 
     Route::get('/admin', 'AdminController@getIndex');
 
+    // Manage Administrators
+
+    Route::get('/admin/admins', 'AdminController@getAdmins');
+
+    Route::get('/admin/admins/add', 'AdminController@addAdmin');
+
+
+    Route::post('/admin/admins', 'AdminController@createAdmin');
+    Route::delete('/admin/admins', 'AdminController@deleteAdmin');
+
     // Listing routes
 
     Route::get('/admin/listings/submissions', 'ListingController@getListingSubmissions');
